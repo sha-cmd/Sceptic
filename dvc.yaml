@@ -8,7 +8,8 @@ stages:
   miro:
     cmd: python src/inference_content_based_filter.py
     outs:
-      - src/infer_cont_filt.txt
+      - src/inference_content_based_filter.txt:
+          cache: false
 
   goya:
     cmd: python src/

@@ -36,7 +36,7 @@ def main():
          :matrix_size, :]
     model = joblib.load('src/model.joblib')
     inference = recommend(items, nb_recommended)
-    with open('src/infer_cont_filt.txt', 'w') as f:
+    with open('src/inference_content_based_filter.txt', 'w') as f:
         f.writelines(inference)
 
 
