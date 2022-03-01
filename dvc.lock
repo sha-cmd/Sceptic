@@ -1,0 +1,14 @@
+schema: '2.0'
+stages:
+  combas:
+    cmd: python src/content_filter.py
+    outs:
+    - path: src/model.joblib
+      md5: a2815bc9323be9b6290b85b5562ed3dc
+      size: 35515022
+  miro:
+    cmd: python src/inf_content_base.py
+    outs:
+    - path: src/infer_cont_filt.txt
+      md5: 1d8a5cd158ebe834061e6fc78e693597
+      size: 726

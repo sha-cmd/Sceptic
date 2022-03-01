@@ -1,0 +1,8 @@
+data:
+  embeddings: /home/romain/Documents/BackUp/Special/Projets/Code_IIA/Projet_9/data/articles_embeddings.pickle
+  embeddings_jovien: ../../data/articles_embeddings.pickle
+  metadata: /home/romain/Documents/BackUp/Special/Projets/Code_IIA/Projet_9/data/articles_metadata.csv
+  metadata_jovien: ../../data/articles_metadata.csv
+
+content_filter:
+  matrix_size: 10000
