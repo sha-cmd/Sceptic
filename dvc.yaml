@@ -1,0 +1,11 @@
+stages:
+  combas:
+    cmd: python src/content_filter.py
+    outs:
+      - src/model.joblib:
+          cache: false
+          persist: true
+  miro:
+    cmd: python src/inf_content_base.py
+    outs:
+      - src/infer_cont_filt.txt
