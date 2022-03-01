@@ -1,11 +1,14 @@
 stages:
   combas:
-    cmd: python src/content_filter.py
+    cmd: python src/content_based_filter.py
     outs:
       - src/model.joblib:
           cache: false
           persist: true
   miro:
-    cmd: python src/inf_content_base.py
+    cmd: python src/inference_content_based_filter.py
     outs:
       - src/infer_cont_filt.txt
+
+  goya:
+    cmd: python src/
