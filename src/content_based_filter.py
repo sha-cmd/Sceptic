@@ -79,6 +79,8 @@ def main():
     print(user)  # Affichage de l’utilisateur sélectionné
     recomm = similar_items_to_user_profile(user, topn=5)  # Retour des 5 meilleures recommandations
     print(recomm)
+    with open('src/inference_content_based_filter.txt', 'w') as f:
+        f.write('user : ' + str(user) + '\n' + 'recommendation : ' + str(recomm))
 
 
 if __name__ == "__main__":
