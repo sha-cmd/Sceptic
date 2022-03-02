@@ -118,7 +118,7 @@ def lambda_fct(user=236):
         #     f.write('user : ' + str(user) + '\n' + 'recommendation : ' + str([str(x[0]) for x in recomm])
         #             + '\nscore           : ' + str([str(round(x[1], 2)) for x in recomm]))
         myArray = StringIO()
-        json.dump(myJSON, myArray);
+        json.dump(myJSON, myArray)
         return myArray.getvalue()
     except KeyError as e:
         return 'Utilisateur sans article concordant avec la matrice tfidf'
