@@ -1,17 +1,20 @@
 import modin.pandas as md
-import pandas as pd
 import numpy as np
+import os
+import pandas as pd
 import yaml
+
 from sklearn.preprocessing import normalize
 from sklearn.metrics.pairwise import cosine_similarity
 from random import choice
 from glob import glob
-import os
+
 global ds  # Valeur Initialisée dans cos_sim
 global tfidf_matrix
 global usr_ds  # DataFrame de nos clicks
 global clicks  # Path du clicks
 global clicks_agg  # Path du fichier concaténé
+
 
 def load_params():
     global clicks
@@ -93,7 +96,6 @@ def main():
             f.write('user : ' + str(user) + '\n' + 'recommendation : ' + str(recomm))
     except KeyError as e:
         print('Utilisateur sans article concordant avec la matrice tfidf')
-
 
 
 if __name__ == "__main__":
