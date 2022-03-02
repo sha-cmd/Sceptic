@@ -1,11 +1,12 @@
 data:
-  embeddings: /home/romain/Documents/BackUp/Special/Projets/Code_IIA/Projet_9/data/articles_embeddings.pickle
-  embeddings_jovien: ../../data/articles_embeddings.pickle
-  metadata: /home/romain/Documents/BackUp/Special/Projets/Code_IIA/Projet_9/data/articles_metadata.csv
-  metadata_jovien: ../../data/articles_metadata.csv
-  clicks: /home/romain/Documents/BackUp/Special/Projets/Code_IIA/Projet_9/data/clicks
-  clicks_jovien: ../../data/clicks
-  clicks_agg: /home/romain/Documents/BackUp/Special/Projets/Code_IIA/Projet_9/data/clicks_agg.csv
+  embeddings: /home/romain/Documents/BackUp/Special/Projets/Code_IIA/Projet_9/Sceptic/data/articles_embeddings.pickle
+  embeddings_jovien: ../data/articles_embeddings.pickle
+  metadata: /home/romain/Documents/BackUp/Special/Projets/Code_IIA/Projet_9/Sceptic/data/articles_metadata.csv
+  metadata_jovien: ../data/articles_metadata.csv
+  clicks: /home/romain/Documents/BackUp/Special/Projets/Code_IIA/Projet_9/Sceptic/data/clicks
+  clicks_jovien: ../data/clicks
+  clicks_agg: /home/romain/Documents/BackUp/Special/Projets/Code_IIA/Projet_9/Sceptic/data/clicks_agg.csv
+
 content_filter:
   matrix_size: 10000
 
