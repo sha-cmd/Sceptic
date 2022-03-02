@@ -85,7 +85,7 @@ def main():
     global ds
     global usr_ds
     embeddings_path, metadata_path, matrix_size, clicks = load_params()
-    user = 236
+    user = 236  # Test
     usr_ds = md.read_csv(clicks_agg)
     usr_ds = usr_ds.loc[usr_ds['user_id'] == user]
     print(user)  # Affichage de l’utilisateur sélectionné
