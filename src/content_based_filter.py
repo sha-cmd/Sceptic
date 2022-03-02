@@ -1,3 +1,4 @@
+import modin.pandas as md
 import pandas as pd
 import numpy as np
 import yaml
@@ -27,14 +28,14 @@ def load_params():
     global ds
     global tfidf_matrix
     global usr_ds
-    usr_ds = pd.read_csv(clicks_list[0])[['user_id', 'click_article_id', 'session_size']]
+    usr_ds = md.read_csv(clicks_list[0])[['user_id', 'click_article_id', 'session_size']]
     if not os.path.isfile(clicks_agg):
         for i in range(1, len(clicks_list)):
-            usr_ds = pd.concat([usr_ds[['user_id', 'click_article_id', 'session_size']], pd.read_csv(clicks_list[i])[['user_id', 'click_article_id', 'session_size']]])
+            usr_ds = md.concat([usr_ds[['user_id', 'click_article_id', 'session_size']], md.read_csv(clicks_list[i])[['user_id', 'click_article_id', 'session_size']]])
         usr_ds.to_csv(clicks_agg)
     else:
         pass
-    ds = pd.read_csv(metadata_path).iloc[:matrix_size, :]
+    ds = md.read_csv(metadata_path).iloc[:matrix_size, :]
     tfidf_matrix = pd.read_pickle(embeddings_path)[:matrix_size, :]
     return embeddings_path, metadata_path, matrix_size, clicks
 
@@ -82,7 +83,7 @@ def main():
     global usr_ds
     embeddings_path, metadata_path, matrix_size, clicks = load_params()
     user = 236
-    usr_ds = pd.read_csv(clicks_agg)
+    usr_ds = md.read_csv(clicks_agg)
     usr_ds = usr_ds.loc[usr_ds['user_id'] == user]
     print(user)  # Affichage de l’utilisateur sélectionné
     try:
