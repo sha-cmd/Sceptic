@@ -5,7 +5,7 @@ data:
   metadata_jovien: ../../data/articles_metadata.csv
   clicks: /home/romain/Documents/BackUp/Special/Projets/Code_IIA/Projet_9/data/clicks
   clicks_jovien: ../../data/clicks
-
+  clicks_agg: /home/romain/Documents/BackUp/Special/Projets/Code_IIA/Projet_9/data/clicks_agg.csv
 content_filter:
   matrix_size: 10000
 

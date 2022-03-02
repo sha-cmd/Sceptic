@@ -5,35 +5,41 @@ from sklearn.preprocessing import normalize
 from sklearn.metrics.pairwise import cosine_similarity
 from random import choice
 from glob import glob
-
+import os
 global ds  # Valeur Initialisée dans cos_sim
 global tfidf_matrix
 global usr_ds  # DataFrame de nos clicks
 global clicks  # Path du clicks
-
+global clicks_agg  # Path du fichier concaténé
 
 def load_params():
+    global clicks
+    global clicks_agg
     with open('params.yaml', 'r') as f:
         params = yaml.safe_load(f)
         embeddings_path = str(params['data']['embeddings'])
         metadata_path = str(params['data']['metadata'])
         matrix_size = int(params['content_filter']['matrix_size'])
         clicks = str(params['data']['clicks'])
+        clicks_agg = str(params['data']['clicks_agg'])
     clicks_list = glob(clicks + '/*.csv')
     clicks = choice(clicks_list)  # Sélection aléatoire d’un fichier de clicks
-    print(clicks)
-    print(embeddings_path)
-    print('chargement du fichier embeddings')
     global ds
     global tfidf_matrix
     global usr_ds
-    usr_ds = pd.read_csv(clicks)
+    usr_ds = pd.read_csv(clicks_list[0])[['user_id', 'click_article_id', 'session_size']]
+    if not os.path.isfile(clicks_agg):
+        for i in range(1, len(clicks_list)):
+            usr_ds = pd.concat([usr_ds[['user_id', 'click_article_id', 'session_size']], pd.read_csv(clicks_list[i])[['user_id', 'click_article_id', 'session_size']]])
+        usr_ds.to_csv(clicks_agg)
+    else:
+        pass
     ds = pd.read_csv(metadata_path).iloc[:matrix_size, :]
     tfidf_matrix = pd.read_pickle(embeddings_path)[:matrix_size, :]
     return embeddings_path, metadata_path, matrix_size, clicks
 
 
-def build_users_profiles(clicks):
+def build_users_profiles():
     global usr_ds
     interactions_indexed_df = usr_ds[usr_ds['click_article_id'].isin(ds['article_id'])]
     user_profiles = {}
@@ -41,7 +47,7 @@ def build_users_profiles(clicks):
         interactions_person_df = interactions_indexed_df \
             .loc[interactions_indexed_df['user_id'] \
                  == person_id]
-        ids = interactions_person_df['click_article_id'].values[0].tolist()
+        ids = interactions_person_df['click_article_id'].values[0]
         ids = ids if (type(ids) == list) else [ids]
         item_profiles_list = [tfidf_matrix[x:x + 1] for x in ids]
         item_profiles = np.stack(item_profiles_list)
@@ -58,7 +64,7 @@ def build_users_profiles(clicks):
 def similar_items_to_user_profile(person_id, topn=1000):
     global ds
     global clicks
-    user_profiles = build_users_profiles(clicks)
+    user_profiles = build_users_profiles()
     # Computes the cosine similarity between the user profile and all item profiles
     cosine_similarities = cosine_similarity(user_profiles[person_id], tfidf_matrix)
     # Gets the top similar items
@@ -71,16 +77,22 @@ def similar_items_to_user_profile(person_id, topn=1000):
 
 def main():
     global clicks
+    global clicks_agg
     global ds
     global usr_ds
     embeddings_path, metadata_path, matrix_size, clicks = load_params()
-    # Filtrage des utilisateurs clickant sur des articles référencés en base de données
-    user = choice(usr_ds.loc[usr_ds['click_article_id'].isin(ds['article_id'])]['user_id'].values.tolist())
+    user = 236
+    usr_ds = pd.read_csv(clicks_agg)
+    usr_ds = usr_ds.loc[usr_ds['user_id'] == user]
     print(user)  # Affichage de l’utilisateur sélectionné
-    recomm = similar_items_to_user_profile(user, topn=5)  # Retour des 5 meilleures recommandations
-    print(recomm)
-    with open('src/inference_content_based_filter.txt', 'w') as f:
-        f.write('user : ' + str(user) + '\n' + 'recommendation : ' + str(recomm))
+    try:
+        recomm = similar_items_to_user_profile(user, topn=5)  # Retour des 5 meilleures recommandations
+        print(recomm)
+        with open('src/inference_content_based_filter.txt', 'w') as f:
+            f.write('user : ' + str(user) + '\n' + 'recommendation : ' + str(recomm))
+    except KeyError as e:
+        print('Utilisateur sans article concordant avec la matrice tfidf')
+
 
 
 if __name__ == "__main__":
