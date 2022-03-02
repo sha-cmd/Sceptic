@@ -1,12 +1,2 @@
-Recommending 10 products similar to Article 4, Category 1, Mots 162...
--------
-Recommended: Article 15, Category 1, Mots 160 (score:62.20402)
-Recommended: Article 2567, Category 1, Mots 172 (score:62.16925)
-Recommended: Article 2220, Category 1, Mots 168 (score:60.344006)
-Recommended: Article 4032, Category 1, Mots 187 (score:59.223114)
-Recommended: Article 3597, Category 1, Mots 299 (score:58.9808)
-Recommended: Article 783, Category 1, Mots 253 (score:57.74648)
-Recommended: Article 13, Category 1, Mots 224 (score:57.184135)
-Recommended: Article 19, Category 1, Mots 256 (score:57.122868)
-Recommended: Article 1271, Category 1, Mots 241 (score:56.79103)
-Recommended: Article 2469, Category 1, Mots 265 (score:56.409058)
+user : 532
+recommendation : [(2136, 0.9999999999999998), (2134, 0.914568819496273), (2915, 0.9107935058747628), (3642, 0.9101067601858356), (2138, 0.905762496778424)]
