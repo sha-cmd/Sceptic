@@ -1,9 +1,11 @@
+import json
 import modin.pandas as md
 import numpy as np
 import os
 import pandas as pd
 import yaml
 
+from io import StringIO
 from sklearn.preprocessing import normalize
 from sklearn.metrics.pairwise import cosine_similarity
 from random import choice
@@ -79,6 +81,15 @@ def similar_items_to_user_profile(person_id, topn=1000):
     return similar_items
 
 
+def lambda_handler(event, context):
+    name = event['queryStringParameters']['name']
+    return {
+        "statusCode": 200,
+        "headers": {"Content-Type": "application/json"},
+        "body": json.dumps({"Hello": name})
+    }
+
+
 def main():
     global clicks
     global clicks_agg
@@ -91,9 +102,13 @@ def main():
     print(user)  # Affichage de l’utilisateur sélectionné
     try:
         recomm = similar_items_to_user_profile(user, topn=5)  # Retour des 5 meilleures recommandations
-        print(recomm)
+        myJSON = [str(x[0]) for x in recomm]
         with open('src/inference_content_based_filter.txt', 'w') as f:
-            f.write('user : ' + str(user) + '\n' + 'recommendation : ' + str(recomm))
+            f.write('user : ' + str(user) + '\n' + 'recommendation : ' + str([str(x[0]) for x in recomm])
+                    + '\nscore : ' + str([str(round(x[1], 2)) for x in recomm]))
+        myArray = StringIO()
+        json.dump(myJSON, myArray);
+        print(myArray.getvalue())
     except KeyError as e:
         print('Utilisateur sans article concordant avec la matrice tfidf')
 
