@@ -16,4 +16,5 @@ collab:
   epochs: 1
   ratio: 0.1
   learning_rate: 0.001
+  rand_seed: 42
 
