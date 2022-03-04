@@ -25,6 +25,7 @@ global sample
 global epochs
 global lr
 global rand_seed
+global ratio_val_test
 
 
 def load_db():
@@ -42,11 +43,12 @@ def load_db():
     global epochs
     global lr
     global rand_seed
+    global ratio_val_test
 
     with open('params.yaml', 'r') as f:
         params = yaml.safe_load(f)
         sample = int(params['collab']['sample'])
-        test_ratio = float(params['collab']['ratio'])
+        ratio_val_test = float(params['collab']['ratio_val_test'])
         epochs = int(params['collab']['epochs'])
         lr = float(params['collab']['learning_rate'])
         metadata_path = str(params['data']['metadata'])
@@ -79,9 +81,9 @@ print(description)
 
 x = df[["user", "book"]].values
 y = df["rating"].apply(lambda x: (x - min_rating) / (max_rating - min_rating)).values
-x_train, x_val, y_train, y_val = train_test_split(
-    x, y, test_size=test_ratio*2, random_state=rand_seed, shuffle=True)
-x_val, x_val, y_val, y_test = train_test_split(x_val, y_val, test_size=0.5, random_state=rand_seed, shuffle=True)
+x_train, x_val_test, y_train, y_val_test = train_test_split(
+    x, y, test_size=ratio_val_test*2, random_state=rand_seed, shuffle=True)
+x_val, x_val, y_val, y_test = train_test_split(x_val_test, y_val_test, test_size=0.5, random_state=rand_seed, shuffle=True)
 print('Data : X -> ' + str(x_train.shape[0]))
 
 EMBEDDING_SIZE = 50
