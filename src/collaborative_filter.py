@@ -134,8 +134,7 @@ def predict(user_id=0):
     df = load_db()
     model = keras.models.load_model('model')
     book_df = pd.read_csv(metadata_path)
-    if str.isnumeric(user_id):
-        user_id = int(user_id)
+    user_id = int(user_id)
     if user_id == 0:
         print('tirage au sort !')
         user_id = df.user_id.sample(1).iloc[0]
