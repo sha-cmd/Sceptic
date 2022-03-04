@@ -14,7 +14,7 @@ content_filter:
 collab:
   sample: 5000
   epochs: 1
-  ratio: 0.1
+  ratio_val_test: 0.1
   learning_rate: 0.001
   rand_seed: 42
 
