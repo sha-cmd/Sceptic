@@ -11,39 +11,25 @@ from sklearn.model_selection import train_test_split
 from tensorflow import keras
 from tensorflow.keras import layers
 
-global ds
-global tfidf_matrix
-global usr_ds
-global usr_ds_ranking
-global clicks
-global clicks_agg
-global clicks_list
 global metadata_path
-global embeddings_path
 global test_ratio
 global sample
 global epochs
 global lr
 global rand_seed
 global ratio_val_test
+global EMBEDDING_SIZE
 
 
 def load_db():
-    global ds
-    global tfidf_matrix
-    global usr_ds
-    global usr_ds_ranking
-    global clicks
-    global clicks_agg
-    global clicks_list
     global metadata_path
-    global embeddings_path
     global test_ratio
     global sample
     global epochs
     global lr
     global rand_seed
     global ratio_val_test
+    global EMBEDDING_SIZE
 
     with open('params.yaml', 'r') as f:
         params = yaml.safe_load(f)
@@ -54,6 +40,7 @@ def load_db():
         metadata_path = str(params['data']['metadata'])
         book_db = str(params['data']['ranking'])
         rand_seed = int(params['collab']['rand_seed'])
+        EMBEDDING_SIZE = int(params['collab']['embedding_size'])
     df = pd.read_csv(book_db)
     df = df.sample(n=sample, random_state=rand_seed)
     return df
@@ -85,8 +72,6 @@ x_train, x_val_test, y_train, y_val_test = train_test_split(
     x, y, test_size=ratio_val_test*2, random_state=rand_seed, shuffle=True)
 x_val, x_val, y_val, y_test = train_test_split(x_val_test, y_val_test, test_size=0.5, random_state=rand_seed, shuffle=True)
 print('Data : X -> ' + str(x_train.shape[0]))
-
-EMBEDDING_SIZE = 50
 
 
 class RecommenderNet(keras.Model):
