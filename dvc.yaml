@@ -1,12 +1,6 @@
 stages:
   combas:
     cmd: python src/content_based_filter.py
-    outs:
-      - src/model.joblib:
-          cache: false
-          persist: true
+
   dirosa:
-    cmd: python src/inference_content_based_filter.py
-    outs:
-      - src/inference_content_based_filter.txt:
-          cache: false
+    cmd: python src/collaborative_filter.py train
