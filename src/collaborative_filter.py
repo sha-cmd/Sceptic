@@ -7,7 +7,7 @@ import yaml
 
 from io import StringIO
 from sklearn.model_selection import train_test_split
-from objects import RecommenderNet
+from objects.RecommenderNet import RecommenderNet
 from tensorflow import keras
 
 global metadata_path
@@ -56,7 +56,8 @@ def load_db():
         rand_seed = int(params['collab']['rand_seed'])
         EMBEDDING_SIZE = int(params['collab']['embedding_size'])
     dataframe = pd.read_csv(book_db)
-    dataframe = dataframe.sample(n=sample, random_state=rand_seed)
+    if not sample == 0:
+        dataframe = dataframe.sample(n=sample, random_state=rand_seed)
     print('db -> ' + str(dataframe.shape[0]))
     user_ids = dataframe["user_id"].unique().tolist()
     user2user_encoded = {x: i for i, x in enumerate(user_ids)}
@@ -118,7 +119,7 @@ def train():
     model.save('model')
 
 
-def predict():
+def predict(user_id=0):
     global metadata_path
     global user2user_encoded
     global book2book_encoded
@@ -133,8 +134,8 @@ def predict():
     df = load_db()
     model = keras.models.load_model('model')
     book_df = pd.read_csv(metadata_path)
-
-    user_id = df.user_id.sample(1).iloc[0]
+    if user_id == 0:
+        user_id = df.user_id.sample(1).iloc[0]
     books_watched_by_user = df[df.user_id == user_id]
     books_not_watched = book_df[
         ~book_df["article_id"].isin(books_watched_by_user.click_article_id.values)
