@@ -6,6 +6,7 @@ data:
   clicks: /home/romain/Documents/BackUp/Special/Projets/Code_IIA/Projet_9/Sceptic/data/clicks
   clicks_jovien: ../data/clicks
   clicks_agg: /home/romain/Documents/BackUp/Special/Projets/Code_IIA/Projet_9/Sceptic/data/clicks_agg.csv
+  ranking: /home/romain/Documents/BackUp/Special/Projets/Code_IIA/Projet_9/Sceptic/data/books_db.csv
 
 content_filter:
   matrix_size: 10000
