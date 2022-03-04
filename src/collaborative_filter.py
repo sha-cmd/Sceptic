@@ -6,6 +6,7 @@ import yaml
 
 from glob import glob
 from random import sample as sampling
+from random import seed
 from sklearn.model_selection import train_test_split
 from tensorflow import keras
 from tensorflow.keras import layers
@@ -23,6 +24,7 @@ global test_ratio
 global sample
 global epochs
 global lr
+global rand_seed
 
 
 def load_db():
@@ -39,6 +41,7 @@ def load_db():
     global sample
     global epochs
     global lr
+    global rand_seed
 
     with open('params.yaml', 'r') as f:
         params = yaml.safe_load(f)
@@ -48,8 +51,9 @@ def load_db():
         lr = float(params['collab']['learning_rate'])
         metadata_path = str(params['data']['metadata'])
         book_db = str(params['data']['ranking'])
-    index = sampling(pd.read_csv(book_db).index.tolist(), sample)  # Tirage aléatoire sans remise
-    df = pd.read_csv(book_db).iloc[index]
+        rand_seed = int(params['collab']['rand_seed'])
+    df = pd.read_csv(book_db)
+    df = df.sample(n=sample, random_state=rand_seed)
     return df
 
 df = load_db()
@@ -73,12 +77,11 @@ max_rating = max(df["rating"])
 description = pd.DataFrame([[num_users, num_books, min_rating, max_rating, sample]], columns=["users", "books", "Min_rating", "max_rating", "lines"])
 print(description)
 
-df = df.sample(frac=1, random_state=42)
 x = df[["user", "book"]].values
 y = df["rating"].apply(lambda x: (x - min_rating) / (max_rating - min_rating)).values
 x_train, x_val, y_train, y_val = train_test_split(
-    x, y, test_size=test_ratio*2, random_state=42, shuffle=True)
-x_val, x_val, y_val, y_test = train_test_split(x_val, y_val, test_size=0.5, random_state=42, shuffle=True)
+    x, y, test_size=test_ratio*2, random_state=rand_seed, shuffle=True)
+x_val, x_val, y_val, y_test = train_test_split(x_val, y_val, test_size=0.5, random_state=rand_seed, shuffle=True)
 print('Data : X -> ' + str(x_train.shape[0]))
 
 EMBEDDING_SIZE = 50
