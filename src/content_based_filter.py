@@ -13,6 +13,7 @@ from glob import glob
 global ds  # Valeur Initialisée dans cos_sim
 global tfidf_matrix
 global usr_ds  # DataFrame de nos clicks
+global usr_ds_ranking  # DataFrame de nos scores
 global clicks  # Path du clicks
 global clicks_agg  # Path du fichier concaténé
 global clicks_list
@@ -24,6 +25,7 @@ def load_params():
     global ds
     global tfidf_matrix
     global usr_ds
+    global usr_ds_ranking
     global clicks
     global clicks_agg
     global clicks_list
@@ -37,9 +39,10 @@ def load_params():
         matrix_size = int(params['content_filter']['matrix_size'])
         clicks = str(params['data']['clicks'])
         clicks_agg = str(params['data']['clicks_agg'])
+        book_db = str(params['data']['ranking'])
     clicks_list = glob(clicks + '/*.csv')
     clicks = choice(clicks_list)  # Sélection aléatoire d’un fichier de clicks
-    return embeddings_path, metadata_path, matrix_size, clicks, clicks_list, clicks_agg
+    return embeddings_path, metadata_path, matrix_size, clicks, clicks_list, clicks_agg, book_db
 
 
 def build_user_profile(person_id):
@@ -47,18 +50,13 @@ def build_user_profile(person_id):
     global embeddings_path
     global clicks_agg
     global usr_ds
+    global usr_ds_ranking
     global ds
     global tfidf_matrix
     global clicks
     global clicks_list
-    embeddings_path, metadata_path, matrix_size, clicks, clicks_list, clicks_agg = load_params()
-    if not os.path.isfile(clicks_agg):
-        usr_ds = pd.read_csv(clicks_list[0])[['user_id', 'click_article_id', 'session_size']]
-        for i in range(1, len(clicks_list)):
-            usr_ds = pd.concat([usr_ds[['user_id', 'click_article_id', 'session_size']], pd.read_csv(clicks_list[i])[['user_id', 'click_article_id', 'session_size']]])
-        usr_ds.to_csv(clicks_agg)
-    else:
-        usr_ds = pd.read_csv(clicks_agg)
+    embeddings_path, metadata_path, matrix_size, clicks, clicks_list, clicks_agg, book_db = load_params()
+    usr_ds = pd.read_csv(clicks_agg)
     ds = pd.read_csv(metadata_path)
     tfidf_matrix = pd.read_pickle(embeddings_path)
     interactions_person_df = usr_ds.loc[(usr_ds['user_id'] == int(person_id))]
@@ -92,13 +90,13 @@ def similar_items_to_user_profile(person_id, topn=1000):
     return similar_items
 
 
-def lambda_handler(event, context):
-    name = event['queryStringParameters']['name']
-    return {
-        "statusCode": 200,
-        "headers": {"Content-Type": "application/json"},
-        "body": json.dumps({"Hello": name})
-    }
+# def lambda_handler(event, context):
+#     name = event['queryStringParameters']['name']
+#     return {
+#         "statusCode": 200,
+#         "headers": {"Content-Type": "application/json"},
+#         "body": json.dumps({"Hello": name})
+#     }
 
 
 def lambda_fct(user=236):
@@ -110,7 +108,7 @@ def lambda_fct(user=236):
     global embeddings_path
     global metadata_path
     global clicks_list
-    embeddings_path, metadata_path, matrix_size, clicks, clicks_list, clicks_agg = load_params()
+    embeddings_path, metadata_path, matrix_size, clicks, clicks_list, clicks_agg, book_db = load_params()
     try:
         recomm = similar_items_to_user_profile(user, topn=4)  # Retour des 5 meilleures recommandations
         myJSON = [str(x[0]) for x in recomm]
@@ -123,3 +121,10 @@ def lambda_fct(user=236):
     except KeyError as e:
         return 'Utilisateur sans article concordant avec la matrice tfidf'
 
+
+def main():
+    lambda_fct()
+
+
+if __name__ == "__main__":
+    main()
