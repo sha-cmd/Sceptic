@@ -1,7 +1,8 @@
 import json
 from flask import Flask, redirect, url_for, request
 from src.content_based_filter import lambda_fct
-
+from src.collaborative_filter import predict
+from src.objects.RecommenderNet import RecommenderNet
 app = Flask(__name__)
 
 
@@ -20,5 +21,5 @@ def greet():
     return {
         "statusCode": 200,
         "headers": {"Content-Type": "application/json"},
-        "body":  lambda_fct(userId)
+        "body":  predict(userId)
     }
