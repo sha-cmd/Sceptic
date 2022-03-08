@@ -1,5 +1,7 @@
 import argparse
 import json
+import sys
+
 import numpy as np
 import pandas as pd
 import tensorflow as tf
@@ -7,7 +9,7 @@ import yaml
 
 from io import StringIO
 from sklearn.model_selection import train_test_split
-from objects.RecommenderNet import RecommenderNet
+from objects.RecommenderNet import RecommenderNet  # add . for AzFunc
 from tensorflow import keras
 
 global metadata_path
@@ -55,7 +57,7 @@ def load_db():
         book_db = str(params['data']['ranking'])
         rand_seed = int(params['collab']['rand_seed'])
         EMBEDDING_SIZE = int(params['collab']['embedding_size'])
-    dataframe = pd.read_csv(book_db)
+    dataframe = pd.read_csv(book_db, index_col='index')
     if not sample == 0:
         dataframe = dataframe.sample(n=sample, random_state=rand_seed)
     print('db -> ' + str(dataframe.shape[0]))
@@ -76,7 +78,9 @@ def load_db():
 
     description = pd.DataFrame([[num_users, num_books, min_rating, max_rating, sample]],
                                columns=["users", "books", "Min_rating", "max_rating", "lines"])
-    print(description)  
+    print(description)
+    print(dataframe.head())
+    dataframe.to_csv('data/books_rating.csv', index_label='index')
     return dataframe
 
 
@@ -101,7 +105,7 @@ def split_data():
     return x_train, x_val, x_test, y_train, y_val, y_test, num_users, num_books
 
 
-def train():
+def train(user=0):
     x_train, x_val, x_test, y_train, y_val, y_test, num_users, num_books = split_data()
     model = RecommenderNet(num_users, num_books, EMBEDDING_SIZE)
     model.compile(
@@ -119,7 +123,7 @@ def train():
     model.save('model')
 
 
-def predict(user_id=0):
+def predict(user=0):
     global metadata_path
     global user2user_encoded
     global book2book_encoded
@@ -134,12 +138,14 @@ def predict(user_id=0):
     df = load_db()
     model = keras.models.load_model('model')
     book_df = pd.read_csv(metadata_path)
-    user_id = int(user_id)
-    if user_id == 0:
+    user = int(user)
+    if user == 0:
         print('tirage au sort !')
-        user_id = df.user_id.sample(1).iloc[0]
-    print(user_id)
-    books_watched_by_user = df[df.user_id == user_id]
+        user = df.user_id.sample(1).iloc[0]
+    books_watched_by_user = df.loc[df['user_id'] == user]
+    if books_watched_by_user.empty:
+        print('pas d’historique pour cet utilisateur')
+        sys.exit()
     books_not_watched = book_df[
         ~book_df["article_id"].isin(books_watched_by_user.click_article_id.values)
     ]["article_id"]
@@ -147,7 +153,7 @@ def predict(user_id=0):
         set(books_not_watched).intersection(set(book2book_encoded.keys()))
     )
     books_not_watched = [[book2book_encoded.get(x)] for x in books_not_watched]
-    user_encoder = user2user_encoded.get(user_id)
+    user_encoder = user2user_encoded.get(user)
     user_book_array = np.hstack(
         ([[user_encoder]] * len(books_not_watched), books_not_watched)
     )
@@ -160,8 +166,10 @@ def predict(user_id=0):
     try:
         recommended_books = book_df[book_df["article_id"].isin(recommended_book_ids)]
         recomm = []
+        n = 0
         for row in recommended_books.itertuples():
-            recomm.append(row.article_id)
+            n += 1            
+            recomm.append(str(row.article_id))
         myJSON = [str(x) for x in recomm]
 
         myArray = StringIO()
@@ -174,14 +182,77 @@ def predict(user_id=0):
         return ('Utilisateur sans article concordant avec la matrice tfidf')
 
 
+def score(user=0):
+    global metadata_path
+    global user2user_encoded
+    global book2book_encoded
+    global book_encoded2book
+    global user2user_encoded
+    global userencoded2user
+    global min_rating
+    global max_rating
+    global num_users
+    global num_books
+
+    df = load_db()
+    model = keras.models.load_model('model')
+    book_df = pd.read_csv(metadata_path)
+    user = int(user)
+
+    if user == 0:
+        print('tirage au sort !')
+        user = df.user_id.sample(1).iloc[0]
+    books_watched_by_user = df.loc[df['user_id'] == user]
+    if books_watched_by_user.empty:
+        print('pas d’historique pour cet utilisateur')
+        sys.exit()
+    books_not_watched = book_df[
+        ~book_df["article_id"].isin(books_watched_by_user.click_article_id.values)
+    ]["article_id"]
+    books_not_watched = list(
+        set(books_not_watched).intersection(set(book2book_encoded.keys()))
+    )
+    books_not_watched = [[book2book_encoded.get(x)] for x in books_not_watched]
+    user_encoder = user2user_encoded.get(user)
+    user_book_array = np.hstack(
+        ([[user_encoder]] * len(books_not_watched), books_not_watched)
+    )
+    ratings = model.predict(user_book_array).flatten()
+    top_ratings_indices = ratings.argsort()[-500:][::-1]
+    recommended_book_ids = [
+        book_encoded2book.get(books_not_watched[x][0]) for x in top_ratings_indices
+    ]
+
+    try:
+        recommended_books = book_df[book_df["article_id"].isin(recommended_book_ids)]
+        recomm = []
+        n = 0
+        for row in recommended_books.itertuples():
+            n += 1
+            recomm.append(str(row.article_id))
+        y_pred = [str(x) for x in recomm]
+        y_true = [str(x) for x in books_watched_by_user['click_article_id'].tolist()]
+        score_pred = sum([x in y_true for x in y_pred])
+
+        print(score_pred)
+        return score_pred
+
+    except KeyError as e:
+        print('Utilisateur sans article concordant avec la matrice tfidf')
+        return ('Utilisateur sans article concordant avec la matrice tfidf')
+
+
 if __name__ == "__main__":
     function_map = {
         'predict': predict,
         'train': train,
+        'score': score
     }
     parser = argparse.ArgumentParser()
     parser.add_argument('command')
+    parser.add_argument('param')
     args = parser.parse_args()
     function = function_map[args.command]
-    function()
+    param = int(args.param)
+    function(param)
 
