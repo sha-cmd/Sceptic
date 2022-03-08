@@ -57,11 +57,10 @@ def build_db():
     global clicks_list
     embeddings_path, metadata_path, matrix_size, clicks, clicks_list, clicks_agg, book_db = load_params()
     if not os.path.isfile(clicks_agg):
-        usr_ds = pd.read_csv(clicks_list[0])[['user_id', 'click_article_id', 'session_size', 'session_id']]
+        usr_ds = pd.read_csv(clicks_list[0])[['user_id', 'click_article_id', 'session_size']]
         for i in range(1, len(clicks_list)):
-            usr_ds = pd.concat([usr_ds[['user_id', 'click_article_id', 'session_size', 'session_id']],
-                                pd.read_csv(clicks_list[i])[['user_id', 'click_article_id', 'session_size',
-                                                             'session_id']]])
+            usr_ds = pd.concat([usr_ds[['user_id', 'click_article_id', 'session_size']],
+                                pd.read_csv(clicks_list[i])[['user_id', 'click_article_id', 'session_size']]])
             usr_ds.index.name = 'index'
         usr_ds.to_csv(clicks_agg)
     else:
@@ -69,11 +68,13 @@ def build_db():
     if not os.path.isfile(book_db):
         usr_ds['rating'] = 1
         usr_ds_ranking = usr_ds.groupby(['user_id', 'click_article_id']).sum()
+        usr_ds = usr_ds.loc[usr_ds['user_id'].value_counts() > 4]  # Elimine les clients sans plus de 5 livres
+        usr_ds = usr_ds.loc[usr_ds['click_article_id'].value_counts() > 1]  # Elimine les livres sans plus d’un client
         usr_ds_ranking = usr_ds_ranking.reset_index()
         usr_ds_ranking = usr_ds_ranking[['user_id', 'click_article_id', 'rating']]
         usr_ds_ranking['rating'] = usr_ds_ranking['rating'].astype('float')
         usr_ds_ranking.index.name = 'index'
-        usr_ds_ranking.to_csv(book_db)
+        usr_ds_ranking.to_csv(book_db, index_label='index')
     else:
         usr_ds_ranking = pd.read_csv(book_db)
 
