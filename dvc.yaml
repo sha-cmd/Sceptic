@@ -3,4 +3,4 @@ stages:
     cmd: python src/content_based_filter.py
 
   dirosa:
-    cmd: python src/collaborative_filter.py train
+    cmd: python src/collaborative_filter.py train 0
