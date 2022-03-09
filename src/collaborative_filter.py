@@ -79,7 +79,7 @@ def load_db():
     description = pd.DataFrame([[num_users, num_books, min_rating, max_rating, sample]],
                                columns=["users", "books", "Min_rating", "max_rating", "lines"])
     print(description)
-    print(dataframe.head())
+    dataframe.sort_values(by=['user_id', 'click_timestamp', 'rating'])
     dataframe.to_csv('data/books_rating.csv', index_label='index')
     return dataframe
 
@@ -96,7 +96,10 @@ def split_data():
     global num_books
     df = load_db()
     x = df[["user", "book"]].values
-    y = df["rating"].apply(lambda x: (x - min_rating) / (max_rating - min_rating)).values
+    y = df["rating"].apply(lambda x1: (x1 - min_rating) / (max_rating - min_rating)).values
+    index_for_val = x.shape[0] - int(x.shape[0]*ratio_val_test*2)
+    index_for_test = x.shape[0] - int(x.shape[0]*ratio_val_test)
+
     x_train, x_val_test, y_train, y_val_test = train_test_split(
         x, y, test_size=ratio_val_test * 2, random_state=rand_seed, shuffle=True)
     x_val, x_test, y_val, y_test = train_test_split(x_val_test, y_val_test, test_size=0.5, random_state=rand_seed,
