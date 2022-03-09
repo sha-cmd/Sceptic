@@ -62,7 +62,7 @@ def build_db():
             usr_ds = pd.concat([usr_ds[['user_id', 'click_article_id', 'session_size', 'click_timestamp']],
                                 pd.read_csv(clicks_list[i])[['user_id', 'click_article_id', 'session_size', 'click_timestamp']]])
             usr_ds.index.name = 'index'
-        list_usr = (usr_ds['click_article_id'].value_counts() > 4).index.tolist()
+        list_usr = (usr_ds['user_id'].value_counts() > 4).index.tolist()
         list_book = (usr_ds['click_article_id'].value_counts() > 1).index.tolist()
         usr_ds = usr_ds.loc[usr_ds['user_id'].isin(list_usr)]  # Elimine les clients sans plus de 5 livres
         usr_ds = usr_ds.loc[usr_ds['click_article_id'].isin(list_book)]  # Elimine les livres sans plus d’un client
