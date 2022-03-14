@@ -44,11 +44,12 @@ def load_params():
         clicks = str(params['data']['clicks'])
         clicks_agg = str(params['data']['clicks_agg'])
         book_db = str(params['data']['ranking'])
-        client_by_book = str(params['collab']['client_by_book'])
-        book_by_client = str(params['collab']['book_by_client'])
+        book_rts = str(params['data']['ratings'])
+        client_by_book = int(params['collab']['client_by_book'])
+        book_by_client = int(params['collab']['book_by_client'])
     clicks_list = glob(clicks + '/*.csv')
     clicks = choice(clicks_list)  # Sélection aléatoire d’un fichier de clicks
-    return embeddings_path, metadata_path, matrix_size, clicks, clicks_list, clicks_agg, book_db
+    return embeddings_path, metadata_path, matrix_size, clicks, clicks_list, clicks_agg, book_db, book_rts
 
 
 def build_db():
@@ -64,7 +65,7 @@ def build_db():
     global client_by_book
     global book_by_client
 
-    embeddings_path, metadata_path, matrix_size, clicks, clicks_list, clicks_agg, book_db = load_params()
+    embeddings_path, metadata_path, matrix_size, clicks, clicks_list, clicks_agg, book_db, book_rts = load_params()
     if not os.path.isfile(clicks_agg):
         usr_ds = pd.read_csv(clicks_list[0])[['user_id', 'click_article_id', 'session_size', 'click_timestamp']]
         for i in range(1, len(clicks_list)):
@@ -97,9 +98,32 @@ def build_db():
         usr_ds_ranking = usr_ds_ranking.droplevel(level=1, axis=1).reset_index()
         usr_ds_ranking['rating'] = usr_ds_ranking['rating'].astype('float')
         usr_ds_ranking.index.name = 'index'
+        usr_ds_ranking['rating'] = usr_ds_ranking['rating'].where(usr_ds_ranking['rating'] < 5, 5)
         usr_ds_ranking.to_csv(book_db, index_label='index')
-    else:
-        usr_ds_ranking = pd.read_csv(book_db)
+        # Encodage des noms et des index des clients et des items
+    if not os.path.isfile(book_rts):
+        dataframe = pd.read_csv(book_db, index_col='index')
+        user_ids = dataframe["user_id"].unique().tolist()
+        user2user_encoded = {x: i for i, x in enumerate(user_ids)}
+        userencoded2user = {i: x for i, x in enumerate(user_ids)}
+        book_ids = dataframe["click_article_id"].unique().tolist()
+        book2book_encoded = {x: i for i, x in enumerate(book_ids)}
+        book_encoded2book = {i: x for i, x in enumerate(book_ids)}
+        dataframe["user"] = dataframe["user_id"].map(user2user_encoded)
+        dataframe["book"] = dataframe["click_article_id"].map(book2book_encoded)
+
+        num_users = len(user2user_encoded)
+        num_books = len(book_encoded2book)
+        dataframe["rating"] = dataframe["rating"].values.astype(np.float32)
+        min_rating = min(dataframe["rating"])
+        max_rating = max(dataframe["rating"])
+        sample = dataframe.shape[0]
+
+        description = pd.DataFrame([[num_users, num_books, min_rating, max_rating, sample]],
+                                   columns=["users", "books", "Min_rating", "max_rating", "lines"])
+        print(description)
+        dataframe.sort_values(by=['user_id', 'click_timestamp', 'rating'])
+        dataframe.to_csv('data/books_rating.csv', index_label='index')
 
 
 def main():
@@ -111,7 +135,7 @@ def main():
     global embeddings_path
     global metadata_path
     global clicks_list
-    embeddings_path, metadata_path, matrix_size, clicks, clicks_list, clicks_agg, book_db = load_params()
+    embeddings_path, metadata_path, matrix_size, clicks, clicks_list, clicks_agg, book_db, book_rts = load_params()
     build_db()
 
 
