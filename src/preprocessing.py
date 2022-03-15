@@ -123,8 +123,13 @@ def build_db():
                                    columns=["users", "books", "Min_rating", "max_rating", "lines"])
         print(description)
         dataframe.sort_values(by=['user_id', 'click_timestamp', 'rating'])
-        dataframe.to_csv('data/books_rating.csv', index_label='index')
-
+        dataframe.to_csv('data/books_ratings.csv', index_label='index')
+        dataframe = dataframe[['user_id', 'click_article_id', 'rating', 'click_timestamp']]  # Dev mode
+        dataframe = dataframe.rename(columns={'user_id': 'userID', 'click_article_id': 'itemID', 'click_timestamp':'timestamp'})
+        # Elimination des clients n’ayant pas de rating différent de 1
+        files = dataframe.groupby('userID')['rating'].agg(['sum', 'size'])
+        dataframe.loc[~dataframe['userID'].isin(files.where(files['sum'] == files['size']).dropna().index.tolist())]
+        dataframe.to_csv('../data/database.csv', index_label='index', sep=';')
 
 def main():
     global ds  # Valeur Initialisée dans cos_sim
