@@ -7,6 +7,7 @@ data:
   clicks_jovien: ../data/clicks
   clicks_agg: /home/romain/Documents/BackUp/Special/Projets/Code_IIA/Projet_9/Azure/functionOC/HttpTrigger/data/clicks_agg.csv
   ranking: /home/romain/Documents/BackUp/Special/Projets/Code_IIA/Projet_9/Azure/functionOC/HttpTrigger/data/books_db.csv
+  ratings: /home/romain/Documents/BackUp/Special/Projets/Code_IIA/Projet_9/Azure/functionOC/HttpTrigger/data/books_ratings.csv
 
 content_filter:
   matrix_size: 10000
@@ -18,4 +19,7 @@ collab:
   learning_rate: 0.001
   rand_seed: 42
   embedding_size: 50
+  client_by_book: 5
+  book_by_client: 4
+
 
