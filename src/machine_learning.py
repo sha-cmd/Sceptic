@@ -1,6 +1,8 @@
 import os
 import os.path as path
 import pandas as pd
+import numpy as np
+from glob import glob
 from surprise import accuracy
 from objects.BookLib import BookLib
 from surprise.model_selection import train_test_split
@@ -81,3 +83,21 @@ for algo_name in pred.keys():
             f.write(str(score))
             pd.DataFrame([[score]], columns=[met_name]) \
                 .to_csv(pred[algo_name][0] + "/" + met_name + ".tsv", index_label='index', sep='\t')
+# Écriture de la synthèse
+liste = glob('metrics/**/*.tsv')
+rmse_list = {'rmse': [pd.read_csv(x, sep='\t', index_col='index').values[0][0] for x in liste if
+             x.split('/')[-1][:4] == 'rmse']}
+mse_list = {'mse': [pd.read_csv(x, sep='\t', index_col='index').values[0][0] for x in liste if
+             x.split('/')[-1][:3] == 'mse']}
+mae_list = {'mae': [pd.read_csv(x, sep='\t', index_col='index').values[0][0] for x in liste if
+             x.split('/')[-1][:3] == 'mae']}
+fcp_list = {'fcp': [pd.read_csv(x, sep='\t', index_col='index').values[0][0] for x in liste if
+             x.split('/')[-1][:3] == 'fcp']}
+name_list = {'name': list(set([x.split('/')[1] for x in liste]))}
+data = {}
+data.update(name_list)
+data.update(rmse_list)
+data.update(mse_list)
+data.update(mae_list)
+data.update(fcp_list)
+pd.DataFrame.from_dict(data).to_csv('metrics/synthese.csv', index_label='index', sep=';')
