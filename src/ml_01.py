@@ -18,14 +18,39 @@ met = {'rmse': accuracy.rmse,
        'mae': accuracy.mae,
        'mse': accuracy.mse,
        'fcp': accuracy.fcp}
-pred = {'metrics/normalPred': prediction_algorithms.random_pred.NormalPredictor,
-        'metrics/baseLine': prediction_algorithms.baseline_only.BaselineOnly}
+pred = {'NormalPred': ['metrics/normalPred', prediction_algorithms.random_pred.NormalPredictor],
+        'baseLineALS': ['metrics/baseLineALS', prediction_algorithms.baseline_only.BaselineOnly],
+        'baseLineSGD': ['metrics/baseLineSGD', prediction_algorithms.baseline_only.BaselineOnly],
+        'KNNBasicALS': ['metrics/knnBasicALS', prediction_algorithms.knns.KNNBasic]
+}
+
+
 
 for a in pred.keys():
-    b = a.split('/')
-
+    b = pred[a][0].split('/')
+    algo = None
     # We'll use the famous SVD algorithm.
-    algo = pred[a]()
+    if a == 'baseLineALS':
+        bsl_options = {'method': 'als',
+                       'n_epochs': 5,
+                       'reg_u': 12,
+                       'reg_i': 5
+                       }
+        algo = pred[a][1](bsl_options=bsl_options)
+
+    elif a == 'baseLineSGD':
+        bsl_options = {'method': 'sgd',
+                       'learning_rate': .00005,
+                       }
+        algo = pred[a][1](bsl_options=bsl_options)
+    elif a == 'KNNBasicALS':
+        bsl_options = {'method': 'als',
+                       'n_epochs': 20,
+                       }
+        sim_options = {'name': 'pearson_baseline'}
+        algo = pred[a][1](bsl_options=bsl_options, sim_options=sim_options)
+    else:
+        algo = pred[a][1]()
 
     # Run 5-fold cross-validation and print results
     algo.fit(trainset)
@@ -37,5 +62,5 @@ for a in pred.keys():
 
     c = ['rmse', 'mae', 'mse', 'fcp']
     for met_name in c:
-        with open(a + '/' + met_name + '.txt', 'w') as f:
+        with open(pred[a][0] + '/' + met_name + '.txt', 'w') as f:
             f.write(str(met[met_name](predictions)))
