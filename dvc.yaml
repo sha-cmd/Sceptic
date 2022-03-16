@@ -8,6 +8,10 @@ stages:
 
   machine_learning:
     cmd: python src/machine_learning.py
+    outs:
+      - metrics/synthese.csv:
+          cache: false
+          persist: true
     metrics:
     - metrics/baseLineALS/rmse.tsv:
         cache: false
