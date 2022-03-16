@@ -22,8 +22,9 @@ pred = {'NormalPred': ['metrics/normalPred', prediction_algorithms.random_pred.N
         'baseLineALS': ['metrics/baseLineALS', prediction_algorithms.baseline_only.BaselineOnly],
         'baseLineSGD': ['metrics/baseLineSGD', prediction_algorithms.baseline_only.BaselineOnly],
         'KNNBasicALS': ['metrics/knnBasicALS', prediction_algorithms.knns.KNNBasic],
-        'KNNBasicSims': ['metrics/knnBasicSims', prediction_algorithms.knns.KNNBasic],
-        'KNNBasicNoShrink': ['metrics/knnBasicNoShrink', prediction_algorithms.knns.KNNBasic],
+        'KNNBasicSimsCos': ['metrics/knnBasicSims', prediction_algorithms.knns.KNNBasic],
+        'KNNBasicSimsMsd': ['metrics/knnBasicSims', prediction_algorithms.knns.KNNBasic],
+        'KNNBasicPearson': ['metrics/knnBasicNoShrink', prediction_algorithms.knns.KNNBasic],
         'SVD': ['metrics/SVD', prediction_algorithms.matrix_factorization.SVD],
         'SVDpp': ['metrics/SVDpp', prediction_algorithms.matrix_factorization.SVDpp],
         'NMF': ['metrics/NMF', prediction_algorithms.matrix_factorization.NMF]
@@ -54,14 +55,18 @@ for a in pred.keys():
                        }
         sim_options = {'name': 'pearson_baseline'}
         algo = pred[a][1](bsl_options=bsl_options, sim_options=sim_options)
-    elif a == 'KNNBasicSims':
+    elif a == 'KNNBasicSimsCos':
         sim_options = {'name': 'cosine',
                        'user_based': False  # compute  similarities between items
                        }
         algo = pred[a][1](sim_options=sim_options)
-    elif a == 'KNNBasicNoShrink':
-        sim_options = {'name': 'pearson_baseline',
-                       'shrinkage': 0  # no shrinkage
+    elif a == 'KNNBasicSimsMsd':
+        sim_options = {'name': 'msd',
+                       'user_based': False  # compute  similarities between items
+                       }
+        algo = pred[a][1](sim_options=sim_options)
+    elif a == 'KNNBasicPearson':
+        sim_options = {'name': 'pearson'
                        }
         algo = pred[a][1](sim_options=sim_options)
     else:
