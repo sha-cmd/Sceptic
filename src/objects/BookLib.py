@@ -8,6 +8,7 @@ from surprise import Reader
 class BookLib:
 
     def __init__(self):
+        print('Creation of BookLib Object')
         self.data = None
         self.name_to_bookID = None
         self.bookID_to_name = None
@@ -18,6 +19,7 @@ class BookLib:
             self.book_db = str(params['data']['ranking'])
 
     def __call__(self):
+        print('Chargement des données')
         self.data = pd.read_csv(self.book_db, index_col='index', sep=';')  # Dev mode
         self.name_to_userID, self.userID_to_name = self.raw_and_ids("userID")
         self.name_to_bookID, self.bookID_to_name = self.raw_and_ids("itemID")
