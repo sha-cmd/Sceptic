@@ -40,16 +40,15 @@ def load_params():
         params = yaml.safe_load(f)
         embeddings_path = str(params['data']['embeddings'])
         metadata_path = str(params['data']['metadata'])
-        matrix_size = int(params['content_filter']['matrix_size'])
         clicks = str(params['data']['clicks'])
         clicks_agg = str(params['data']['clicks_agg'])
         book_db = str(params['data']['ranking'])
         book_rts = str(params['data']['ratings'])
-        client_by_book = int(params['collab']['client_by_book'])
-        book_by_client = int(params['collab']['book_by_client'])
+        client_by_book = int(params['machine_learning']['client_by_book'])
+        book_by_client = int(params['machine_learning']['book_by_client'])
     clicks_list = glob(clicks + '/*.csv')
     clicks = choice(clicks_list)  # Sélection aléatoire d’un fichier de clicks
-    return embeddings_path, metadata_path, matrix_size, clicks, clicks_list, clicks_agg, book_db, book_rts
+    return embeddings_path, metadata_path, clicks, clicks_list, clicks_agg, book_db, book_rts
 
 
 def build_db():
@@ -65,7 +64,7 @@ def build_db():
     global client_by_book
     global book_by_client
 
-    embeddings_path, metadata_path, matrix_size, clicks, clicks_list, clicks_agg, book_db, book_rts = load_params()
+    embeddings_path, metadata_path, clicks, clicks_list, clicks_agg, book_db, book_rts = load_params()
     if not os.path.isfile(clicks_agg):
         usr_ds = pd.read_csv(clicks_list[0])[['user_id', 'click_article_id', 'session_size', 'click_timestamp']]
         for i in range(1, len(clicks_list)):
@@ -145,7 +144,7 @@ def main():
     global embeddings_path
     global metadata_path
     global clicks_list
-    embeddings_path, metadata_path, matrix_size, clicks, clicks_list, clicks_agg, book_db, book_rts = load_params()
+    embeddings_path, metadata_path, clicks, clicks_list, clicks_agg, book_db, book_rts = load_params()
     build_db()
 
 
