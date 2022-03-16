@@ -26,45 +26,45 @@ pred = {'NormalPred': ['metrics/normalPred', prediction_algorithms.random_pred.N
         'NMF': ['metrics/NMF', prediction_algorithms.matrix_factorization.NMF]
         }
 
-for algo in pred.keys():
-    dir_list = pred[algo][0].split('/')
+for algo_name in pred.keys():
+    dir_list = pred[algo_name][0].split('/')
+    print(algo_name)
     algo = None
-    print(algo)
     # We'll use the famous SVD algorithm.
-    if algo == 'baseLineALS':
+    if algo_name == 'baseLineALS':
         bsl_options = {'method': 'als',
                        'n_epochs': 5,
                        'reg_u': 12,
                        'reg_i': 5
                        }
-        algo = pred[algo][1](bsl_options=bsl_options)
-    elif algo == 'baseLineSGD':
+        algo = pred[algo_name][1](bsl_options=bsl_options)
+    elif algo_name == 'baseLineSGD':
         bsl_options = {'method': 'sgd',
                        'learning_rate': .00005,
                        }
-        algo = pred[algo][1](bsl_options=bsl_options)
-    elif algo == 'KNNBasicALS':
+        algo = pred[algo_name][1](bsl_options=bsl_options)
+    elif algo_name == 'KNNBasicALS':
         bsl_options = {'method': 'als',
                        'n_epochs': 20,
                        }
         sim_options = {'name': 'pearson_baseline'}
-        algo = pred[algo][1](bsl_options=bsl_options, sim_options=sim_options)
-    elif algo == 'KNNBasicSimsCos':
+        algo = pred[algo_name][1](bsl_options=bsl_options, sim_options=sim_options)
+    elif algo_name == 'KNNBasicSimsCos':
         sim_options = {'name': 'cosine',
                        'user_based': False  # compute  similarities between items
                        }
-        algo = pred[algo][1](sim_options=sim_options)
-    elif algo == 'KNNBasicSimsMsd':
+        algo = pred[algo_name][1](sim_options=sim_options)
+    elif algo_name == 'KNNBasicSimsMsd':
         sim_options = {'name': 'msd',
                        'user_based': False  # compute  similarities between items
                        }
-        algo = pred[algo][1](sim_options=sim_options)
-    elif algo == 'KNNBasicPearson':
+        algo = pred[algo_name][1](sim_options=sim_options)
+    elif algo_name == 'KNNBasicPearson':
         sim_options = {'name': 'pearson'
                        }
-        algo = pred[algo][1](sim_options=sim_options)
+        algo = pred[algo_name][1](sim_options=sim_options)
     else:
-        algo = pred[algo][1]()
+        algo = pred[algo_name][1]()
 
     # Run 5-fold cross-validation and print results
     algo.fit(train_set)
@@ -76,8 +76,8 @@ for algo in pred.keys():
 
     metric_list = ['rmse', 'mae', 'mse', 'fcp']
     for met_name in metric_list:
-        with open(pred[algo][0] + '/' + met_name + '.txt', 'w') as f:
+        with open(pred[algo_name][0] + '/' + met_name + '.txt', 'w') as f:
             score = met[met_name](predictions)
             f.write(str(score))
             pd.DataFrame([[score]], columns=[met_name]) \
-                .to_csv(pred[algo][0] + "/" + met_name + ".tsv", index_label='index', sep='\t')
+                .to_csv(pred[algo_name][0] + "/" + met_name + ".tsv", index_label='index', sep='\t')
