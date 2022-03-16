@@ -21,7 +21,12 @@ met = {'rmse': accuracy.rmse,
 pred = {'NormalPred': ['metrics/normalPred', prediction_algorithms.random_pred.NormalPredictor],
         'baseLineALS': ['metrics/baseLineALS', prediction_algorithms.baseline_only.BaselineOnly],
         'baseLineSGD': ['metrics/baseLineSGD', prediction_algorithms.baseline_only.BaselineOnly],
-        'KNNBasicALS': ['metrics/knnBasicALS', prediction_algorithms.knns.KNNBasic]
+        'KNNBasicALS': ['metrics/knnBasicALS', prediction_algorithms.knns.KNNBasic],
+        'KNNBasicSims': ['metrics/knnBasicSims', prediction_algorithms.knns.KNNBasic],
+        'KNNBasicNoShrink': ['metrics/knnBasicNoShrink', prediction_algorithms.knns.KNNBasic],
+        'SVD': ['metrics/SVD', prediction_algorithms.matrix_factorization.SVD],
+        'SVDpp': ['metrics/SVDpp', prediction_algorithms.matrix_factorization.SVDpp],
+        'NMF': ['metrics/NMF', prediction_algorithms.matrix_factorization.NMF]
 }
 
 
@@ -29,6 +34,7 @@ pred = {'NormalPred': ['metrics/normalPred', prediction_algorithms.random_pred.N
 for a in pred.keys():
     b = pred[a][0].split('/')
     algo = None
+    print(a)
     # We'll use the famous SVD algorithm.
     if a == 'baseLineALS':
         bsl_options = {'method': 'als',
@@ -37,7 +43,6 @@ for a in pred.keys():
                        'reg_i': 5
                        }
         algo = pred[a][1](bsl_options=bsl_options)
-
     elif a == 'baseLineSGD':
         bsl_options = {'method': 'sgd',
                        'learning_rate': .00005,
@@ -49,6 +54,16 @@ for a in pred.keys():
                        }
         sim_options = {'name': 'pearson_baseline'}
         algo = pred[a][1](bsl_options=bsl_options, sim_options=sim_options)
+    elif a == 'KNNBasicSims':
+        sim_options = {'name': 'cosine',
+                       'user_based': False  # compute  similarities between items
+                       }
+        algo = pred[a][1](sim_options=sim_options)
+    elif a == 'KNNBasicNoShrink':
+        sim_options = {'name': 'pearson_baseline',
+                       'shrinkage': 0  # no shrinkage
+                       }
+        algo = pred[a][1](sim_options=sim_options)
     else:
         algo = pred[a][1]()
 
