@@ -9,16 +9,12 @@ data:
   ranking: /home/romain/Documents/BackUp/Special/Projets/Code_IIA/Projet_9/Azure/functionOC/HttpTrigger/data/database.csv
   ratings: /home/romain/Documents/BackUp/Special/Projets/Code_IIA/Projet_9/Azure/functionOC/HttpTrigger/data/books_ratings.csv
 
-content_filter:
-  matrix_size: 10000
-
-collab:
-  sample: 0
+machine_learning:
+  sample: 100000
   epochs: 10
   ratio_val_test: 0.1
   learning_rate: 0.001
   rand_seed: 42
-  embedding_size: 50
   client_by_book: 20
   book_by_client: 50
 
