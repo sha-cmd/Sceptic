@@ -20,7 +20,7 @@ class BookLib:
 
     def __call__(self):
         print('Chargement des données')
-        self.data = pd.read_csv(self.book_db, index_col='index', sep=';')  # Dev mode
+        self.data = pd.read_csv(self.book_db, index_col='index', sep=';')
         self.name_to_userID, self.userID_to_name = self.raw_and_ids("userID")
         self.name_to_bookID, self.bookID_to_name = self.raw_and_ids("itemID")
         reader = Reader(rating_scale=(1, 5))
