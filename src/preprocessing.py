@@ -126,13 +126,13 @@ def build_db():
         dataframe = dataframe[['user_id', 'click_article_id', 'rating', 'click_timestamp']]  # Dev mode
         dataframe = dataframe.rename(columns={'user_id': 'userID', 'click_article_id': 'itemID', 'click_timestamp':'timestamp'})
         # Elimination des clients n’ayant pas de rating différent de 1
-        #files = dataframe.groupby('userID')['rating'].agg(['sum', 'size'])
-        #dataframe = dataframe.loc[~dataframe['userID'].isin(files.where(files['sum'] == files['size']).dropna().index.tolist())]
-        #files = dataframe.groupby('itemID')['rating'].agg(['sum', 'size'])
-        #dataframe = dataframe.loc[~dataframe['itemID'].isin(files.where(files['sum'] == files['size']).dropna().index.tolist())]
-        #nb = (dataframe['rating'].value_counts().iloc[0] - dataframe['rating'].value_counts().iloc[1:].max()/2)
-        #black_list = (dataframe.loc[dataframe['rating'] == 1].sample(nb).index.to_list())
-        #dataframe = dataframe.drop(index=black_list, axis=0)
+        files = dataframe.groupby('userID')['rating'].agg(['sum', 'size'])
+        dataframe = dataframe.loc[~dataframe['userID'].isin(files.where(files['sum'] == files['size']).dropna().index.tolist())]
+        files = dataframe.groupby('itemID')['rating'].agg(['sum', 'size'])
+        dataframe = dataframe.loc[~dataframe['itemID'].isin(files.where(files['sum'] == files['size']).dropna().index.tolist())]
+        nb = (dataframe['rating'].value_counts().iloc[0] - dataframe['rating'].value_counts().iloc[1:].max()/2)
+        black_list = (dataframe.loc[dataframe['rating'] == 1].sample(nb).index.to_list())
+        dataframe = dataframe.drop(index=black_list, axis=0)
         dataframe.to_csv('data/database.csv', index_label='index', sep=';')
 
 def main():
