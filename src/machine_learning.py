@@ -1,33 +1,46 @@
 import os
 import os.path as path
 import pandas as pd
-import numpy as np
-from glob import glob
 from surprise import accuracy
 from objects.BookLib import BookLib
 from surprise.model_selection import train_test_split
 from surprise import prediction_algorithms
+from surprise.model_selection import LeaveOneOut
+from objects.Metrics import Metrics
 
+n = 10  # TopN
 book_library = BookLib()
-data = book_library()
+data, rankings = book_library()
 train_set, test_set = train_test_split(data, test_size=.25)
+LOOCV = LeaveOneOut(n_splits=1, random_state=1, min_n_ratings=20)
+for train, test in LOOCV.split(data):
+    LOOCVTrain = train
+    LOOCVTest = test
+
+LOOCVAntiTestSet = LOOCVTrain.build_anti_testset()
 
 met = {'rmse': accuracy.rmse,
        'mae': accuracy.mae,
        'mse': accuracy.mse,
-       'fcp': accuracy.fcp}
+       'fcp': accuracy.fcp,
+       'TopN': Metrics.GetTopN,
+       'HR': Metrics.HitRate,
+       'cHR': Metrics.CumulativeHitRate,
+       'ARHR': Metrics.AverageReciprocalHitRank}
 pred = {'NormalPred': ['metrics/normalPred', prediction_algorithms.random_pred.NormalPredictor],
         'baseLineALS': ['metrics/baseLineALS', prediction_algorithms.baseline_only.BaselineOnly],
-        'baseLineSGD': ['metrics/baseLineSGD', prediction_algorithms.baseline_only.BaselineOnly],
-        'KNNBasicALS': ['metrics/knnBasicALS', prediction_algorithms.knns.KNNBasic],
-        'KNNBasicSimsCos': ['metrics/knnBasicSims', prediction_algorithms.knns.KNNBasic],
-        'KNNBasicSimsMsd': ['metrics/knnBasicSims', prediction_algorithms.knns.KNNBasic],
-        'KNNBasicPearson': ['metrics/knnBasicNoShrink', prediction_algorithms.knns.KNNBasic],
-        'SVD': ['metrics/SVD', prediction_algorithms.matrix_factorization.SVD],
-        'SVDpp': ['metrics/SVDpp', prediction_algorithms.matrix_factorization.SVDpp],
-        'NMF': ['metrics/NMF', prediction_algorithms.matrix_factorization.NMF]
+        # 'baseLineSGD': ['metrics/baseLineSGD', prediction_algorithms.baseline_only.BaselineOnly],
+        # 'KNNBasicALS': ['metrics/knnBasicALS', prediction_algorithms.knns.KNNBasic],
+        # 'KNNBasicSimsCos': ['metrics/knnBasicSims', prediction_algorithms.knns.KNNBasic],
+        # 'KNNBasicSimsMsd': ['metrics/knnBasicSims', prediction_algorithms.knns.KNNBasic],
+        # 'KNNBasicPearson': ['metrics/knnBasicNoShrink', prediction_algorithms.knns.KNNBasic],
+        # 'SVD': ['metrics/SVD', prediction_algorithms.matrix_factorization.SVD],
+        # 'SVDpp': ['metrics/SVDpp', prediction_algorithms.matrix_factorization.SVDpp],
+        # 'NMF': ['metrics/NMF', prediction_algorithms.matrix_factorization.NMF]
         }
 
+
+data = {'name': [], 'rmse': [], 'mae': [], 'mse': [], 'fcp': [], 'HR': [], 'cHR': [], 'ARHR': []}
 for algo_name in pred.keys():
     dir_list = pred[algo_name][0].split('/')
     print(algo_name)
@@ -68,36 +81,29 @@ for algo_name in pred.keys():
     else:
         algo = pred[algo_name][1]()
 
-    # Run 5-fold cross-validation and print results
     algo.fit(train_set)
     predictions = algo.test(test_set)
-
+    leftOutPredictions = algo.test(LOOCVTest)
+    allPredictions = algo.test(LOOCVAntiTestSet)
     for it, dirs in enumerate(dir_list):
         if not path.isdir("/".join(dir_list[:it + 1])):
             os.makedirs("/".join(dir_list[:it + 1]))
 
-    metric_list = ['rmse', 'mae', 'mse', 'fcp']
+    metric_list = ['rmse', 'mae', 'mse', 'fcp', 'HR', 'cHR', 'ARHR']
+
+    topNPredicted = Metrics.GetTopN(allPredictions, n)
     for met_name in metric_list:
         with open(pred[algo_name][0] + '/' + met_name + '.txt', 'w') as f:
-            score = met[met_name](predictions)
+            score = None
+            if met_name in ['rmse', 'mae', 'mse', 'fcp']:
+                score = met[met_name](predictions)
+            else:
+                score = met[met_name](topNPredicted, leftOutPredictions)
             f.write(str(score))
             pd.DataFrame([[score]], columns=[met_name]) \
                 .to_csv(pred[algo_name][0] + "/" + met_name + ".tsv", index_label='index', sep='\t')
-# Écriture de la synthèse
-liste = glob('metrics/**/*.tsv')
-rmse_list = {'rmse': [pd.read_csv(x, sep='\t', index_col='index').values[0][0] for x in liste if
-             x.split('/')[-1][:4] == 'rmse']}
-mse_list = {'mse': [pd.read_csv(x, sep='\t', index_col='index').values[0][0] for x in liste if
-             x.split('/')[-1][:3] == 'mse']}
-mae_list = {'mae': [pd.read_csv(x, sep='\t', index_col='index').values[0][0] for x in liste if
-             x.split('/')[-1][:3] == 'mae']}
-fcp_list = {'fcp': [pd.read_csv(x, sep='\t', index_col='index').values[0][0] for x in liste if
-             x.split('/')[-1][:3] == 'fcp']}
-name_list = {'name': list(set([x.split('/')[1] for x in liste]))}
-data = {}
-data.update(name_list)
-data.update(rmse_list)
-data.update(mse_list)
-data.update(mae_list)
-data.update(fcp_list)
+        data[met_name].append(score)
+    data['name'].append(algo_name)
+
+
 pd.DataFrame.from_dict(data).to_csv('metrics/synthese.csv', index_label='index', sep=';')
