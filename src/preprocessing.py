@@ -130,10 +130,18 @@ def build_db():
         dataframe = dataframe.loc[~dataframe['userID'].isin(files.where(files['sum'] == files['size']).dropna().index.tolist())]
         files = dataframe.groupby('itemID')['rating'].agg(['sum', 'size'])
         dataframe = dataframe.loc[~dataframe['itemID'].isin(files.where(files['sum'] == files['size']).dropna().index.tolist())]
-        nb = (dataframe['rating'].value_counts().iloc[0] - dataframe['rating'].value_counts().iloc[1:].max()/2)
-        black_list = (dataframe.loc[dataframe['rating'] == 1].sample(nb).index.to_list())
-        dataframe = dataframe.drop(index=black_list, axis=0)
+        # Mesure prophylactique pour équilibré les classes de notes en réduisant la classe 1 à
+#        nb = (dataframe['rating'].value_counts().iloc[0] - dataframe['rating'].value_counts().iloc[1:].max()/2)
+#        black_list = (dataframe.loc[dataframe['rating'] == 1].sample(int(nb)).index.to_list())
+#        dataframe = dataframe.drop(index=black_list, axis=0)
         dataframe.to_csv('data/database.csv', index_label='index', sep=';')
+        with open('data/report_on_data.txt', 'w') as f:
+            f.writelines(str(dataframe['rating'].value_counts()))
+            f.writelines('\nMax rating by user : ' + str(
+                dataframe.groupby('userID').agg('size').max()))
+            f.writelines('\nMin rating by user : ' + str(
+                dataframe.groupby('userID').agg('size').min()))
+
 
 def main():
     global ds  # Valeur Initialisée dans cos_sim
