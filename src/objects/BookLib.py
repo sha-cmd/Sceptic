@@ -25,7 +25,8 @@ class BookLib:
         self.name_to_bookID, self.bookID_to_name = self.raw_and_ids("itemID")
         reader = Reader(rating_scale=(1, 5))
         ratingsDataset = Dataset.load_from_df(self.data[['userID', 'itemID', 'rating']], reader)
-        return ratingsDataset
+        rankings = self.data.groupby('itemID').agg('size').to_dict()
+        return ratingsDataset, rankings
 
     def raw_and_ids(self, name):
         raw_ids = self.data[name].unique().tolist()
