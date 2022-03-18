@@ -1,17 +1,11 @@
-import os
-import os.path as path
+
 import pandas as pd
 import yaml
-from surprise import accuracy
 from joblib import Parallel, delayed
 from objects.BookLib import BookLib
-from surprise.model_selection import train_test_split
 from surprise import prediction_algorithms
-from surprise.model_selection import LeaveOneOut
-from objects.Metrics import Metrics
-from surprise import KNNBaseline
-from surprise.model_selection import KFold
-from pyparsing import Word, OneOrMore, Optional, Group, Combine, Suppress, alphanums, alphas, nums, srange
+
+from pyparsing import Word, OneOrMore, Group, Combine, alphanums, nums, srange
 
 global data_rs
 data_rs = {}
