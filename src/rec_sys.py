@@ -48,8 +48,6 @@ n = 10  # TopN
 book_library = BookLib()
 data, rankings = book_library()
 fulltrain = data.build_full_trainset()
-topNPredicted = None
-train_set, test_set = train_test_split(data, test_size=0.025)
 
 pred = {'KNNBasicPearson': ['metrics/knnBasicNoShrink', prediction_algorithms.knns.KNNBasic]}
 for algo_name in pred.keys():
