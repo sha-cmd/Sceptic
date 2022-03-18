@@ -11,6 +11,7 @@ from pandas.core.frame import DataFrame
 from io import StringIO
 from sklearn.model_selection import train_test_split
 from RecommenderNet import RecommenderNet  # add . for AzFunc
+from sklearn.model_selection import LeaveOneOut
 from tensorflow import keras
 
 class CF:
@@ -121,8 +122,65 @@ class CF:
         )
         model.save('model')
 
-    def test(self):
-        pass
+    def getTopN(self, user=0):
+
+        data = {}
+        if not type(self.dataframe) == DataFrame:
+            self.load_db()
+        #user = self.userencoded2user[user]
+        model = keras.models.load_model('model')
+        book_df = pd.read_csv(self.metadata_path)
+        nb_user = len(self.userencoded2user)
+        print(nb_user)
+        for user in range(5):
+            user = self.userencoded2user[user]
+            user = int(user)
+            #if user == 0:  # Dev Mode
+            #    print('tirage au sort !')
+            #    user = self.dataframe.userID.sample(1).iloc[0]
+            #    print(user)
+            books_watched_by_user = self.dataframe.loc[self.dataframe['userID'] == user]
+            if books_watched_by_user.empty:
+                print('pas d’historique pour cet utilisateur')
+                sys.exit()
+            books_not_watched = book_df[
+                ~book_df["article_id"].isin(books_watched_by_user.itemID.values)
+            ]["article_id"]
+            books_not_watched = list(
+                set(books_not_watched).intersection(set(self.book2book_encoded.keys()))
+            )
+            books_not_watched = [[self.book2book_encoded.get(x)] for x in books_not_watched]
+            user_encoder = self.user2user_encoded.get(user)
+            user_book_array = np.hstack(
+                ([[user_encoder]] * len(books_not_watched), books_not_watched)
+            )
+            ratings = model.predict(user_book_array).flatten()
+            top_ratings_indices = ratings.argsort()[-10:][::-1]
+            recommended_book_ids = [
+                self.book_encoded2book.get(books_not_watched[x][0]) for x in top_ratings_indices
+            ]
+            recommended_book_est = [
+                ratings[x]*5 for x in top_ratings_indices
+            ]
+            try:
+                recommended_books = book_df[book_df["article_id"].isin(recommended_book_ids)]
+                recomm = []
+                n = 0
+                for row in recommended_books.itertuples():
+                    recomm.append((str(row.article_id), str(recommended_book_est[n])))
+                    n += 1
+                data.update({user: recomm})
+                myJSON = [str(x) for x in recomm]
+                myArray = StringIO()
+                json.dump(myJSON, myArray)
+                #print(myArray.getvalue())
+            #return myArray.getvalue()
+
+            except KeyError as e:
+                print('Utilisateur sans article concordant avec la matrice tfiself.dataframe')
+                return ('Utilisateur sans article concordant avec la matrice tfiself.dataframe')
+
+        print(data)
 
     def predict(self, user=0):
         if not type(self.dataframe) == DataFrame:
@@ -244,7 +302,8 @@ if __name__ == "__main__":
         'predict': cf.predict,
         'train': cf.train,
         'score': cf.score,
-        'scoring': cf.scoring
+        'scoring': cf.scoring,
+        'getTopN': cf.getTopN
     }
     parser = argparse.ArgumentParser()
     parser.add_argument('command')
