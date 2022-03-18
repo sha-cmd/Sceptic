@@ -18,7 +18,6 @@ LOOCV = LeaveOneOut(n_splits=1, random_state=42, min_n_ratings=3)
 for train, test in LOOCV.split(data):
     LOOCVTrain = train
     LOOCVTest = test
-
 LOOCVAntiTestSet = LOOCVTrain.build_anti_testset()
 # Compute similarty matrix between items so we can measure diversity
 sim_options = {'name': 'cosine', 'user_based': False}
@@ -98,13 +97,13 @@ for algo_name in pred.keys():
     predictions = algo.test(test_set)
     leftOutPredictions = algo.test(LOOCVTest)
     allPredictions = algo.test(LOOCVAntiTestSet)
-    topNPredicted = Metrics.GetTopN(allPredictions, n)
+    topNPredicted = Metrics.GetTopN(allPredictions, n, 2.0)
     for it, dirs in enumerate(dir_list):
         if not path.isdir("/".join(dir_list[:it + 1])):
             os.makedirs("/".join(dir_list[:it + 1]))
 
     metric_list = ['rmse', 'mae', 'mse', 'fcp', 'HR', 'cHR', 'ARHR', 'Coverage', 'Diversity', 'Novelty']
-
+    json = {}
     for met_name in metric_list:
         print(met_name)
         with open(pred[algo_name][0] + '/' + met_name + '.txt', 'w') as f:
@@ -112,7 +111,7 @@ for algo_name in pred.keys():
             if met_name in ['rmse', 'mae', 'mse', 'fcp']:
                 score = met[met_name](predictions)
             elif met_name == 'Coverage':
-                score = met[met_name](topNPredicted, fulltrain.n_users, ratingThreshold=4.0)
+                score = met[met_name](topNPredicted, fulltrain.n_users, ratingThreshold=2.0)
             elif met_name == 'Diversity':
                 score = met[met_name](topNPredicted, simsAlgo)
             elif met_name == 'Novelty':
@@ -122,6 +121,17 @@ for algo_name in pred.keys():
             f.write(str(score))
             pd.DataFrame([[score]], columns=[met_name]) \
                 .to_csv(pred[algo_name][0] + "/" + met_name + ".tsv", index_label='index', sep='\t')
+        json[met_name].append(score)
+        with open(pred[algo_name][0] + '/' + met_name + '.json', 'w') as f:
+            chain = ''
+            nb = len(data.keys())
+            n = 0
+            for key, value in data.items():
+                chain += '"' + key + '": ' + value
+                if n < nb:
+                    chain += ','
+                n += 1
+            f.writelines('{' + chain + '}')
         data[met_name].append(score)
     data['name'].append(algo_name)
 

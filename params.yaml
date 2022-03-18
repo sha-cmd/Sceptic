@@ -10,6 +10,7 @@ data:
   ratings: /home/romain/Documents/BackUp/Special/Projets/Code_IIA/Projet_9/Azure/functionOC/HttpTrigger/data/books_ratings.csv
 
 machine_learning:
+  matrix_size: 100000
   sample: 10000
   epochs: 10
   ratio_val_test: 0.1
