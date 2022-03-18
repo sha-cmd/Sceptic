@@ -55,3 +55,5 @@ for algo_name in pred.keys():
     for ruid in dataframe['userID'].unique():
         Parallel(n_jobs=-1)(
                 delayed(data_calc)(ruid, riid, algo) for riid in dataframe['itemID'].unique())
+
+df = pd.DataFrame.from_dict(data_rs)
