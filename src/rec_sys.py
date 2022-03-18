@@ -44,7 +44,6 @@ book_encoded2book = {i: x for i, x in enumerate(book_ids)}
 dataframe["user"] = dataframe["userID"].map(user2user_encoded)
 dataframe["book"] = dataframe["itemID"].map(book2book_encoded)
 
-n = 10  # TopN
 book_library = BookLib()
 data, rankings = book_library()
 fulltrain = data.build_full_trainset()
