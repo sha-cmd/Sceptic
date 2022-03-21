@@ -92,11 +92,11 @@ def calculate_similar_artists(output_filename, model_name="als"):
     for i in range(len(df)):
         item[df.iloc[i, 0]] = df.iloc[i, 2]
         user[df.iloc[i, 1]][df.iloc[i, 0]] = df.iloc[i, 2]
-    user_plays = scipy.sparse.csr_matrix(pd.DataFrame.from_dict(user).fillna(0).values)
+    user_plays = scipy.sparse.csr_matrix(pd.DataFrame.from_dict(user).fillna(0).T.values)
 
     logging.debug("training model %s", model_name)
     start = time.time()
-    model.fit(user_plays.T)
+    model.fit(user_plays)
     logging.debug("trained model '%s' in %0.2fs", model_name, time.time() - start)
 
     # write out similar artists by popularity
