@@ -61,10 +61,15 @@ def build_user_profile(person_id):
     tfidf_matrix = pd.read_pickle(embeddings_path)
     interactions_person_df = usr_ds.loc[(usr_ds['user_id'] == int(person_id))]
     interactions_person_df = interactions_person_df.loc[interactions_person_df['click_article_id'].isin(ds['article_id'])]
+    # Le profil contiendra les vecteurs de poids de la matrice TF-IDF
     user_profiles = {}
+    # Nous listons les articles déjà consultés
     ids = interactions_person_df['click_article_id'].values[0]
+    # Nous nous assurons que le résultat est sous forme de liste
     ids = ids if (type(ids) == list) else [ids]
+    # Nous attrapons les poids relatifs à nos items dans la matrice TF-IDF
     item_profiles_list = [tfidf_matrix[x:x + 1] for x in ids]
+    # Nous les disposons en colonnes
     item_profiles = np.stack(item_profiles_list)
     user_item_profiles = item_profiles
     user_item_strengths = [max(np.array(interactions_person_df['session_size']))]
