@@ -140,3 +140,7 @@ stages:
       size: 1071
   deep_learning:
     cmd: python src/objects/ALS.py --recommend --model als
+    outs:
+    - path: data/similar-books.tsv
+      md5: f1f1c1914da38838b50bea2581c73f77
+      size: 6260261
