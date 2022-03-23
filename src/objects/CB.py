@@ -60,7 +60,8 @@ def build_user_profile(person_id):
     ds = pd.read_csv(metadata_path)
     tfidf_matrix = pd.read_pickle(embeddings_path)
     interactions_person_df = usr_ds.loc[(usr_ds['user_id'] == int(person_id))]
-    interactions_person_df = interactions_person_df.loc[interactions_person_df['click_article_id'].isin(ds['article_id'])]
+    interactions_person_df = interactions_person_df.loc[
+        interactions_person_df['click_article_id'].isin(ds['article_id'])]
     # Le profil contiendra les vecteurs de poids de la matrice TF-IDF
     user_profiles = {}
     # Nous listons les articles déjà consultés
@@ -70,11 +71,10 @@ def build_user_profile(person_id):
     # Nous les disposons en colonnes
     item_profiles = np.stack(item_profiles_list)
     user_item_profiles = item_profiles
-    user_item_strengths = [max(np.array(interactions_person_df['session_size']))]  # Improve
-    user_item_strengths_weighted_avg = np.sum(np.multiply(user_item_profiles,
-                                                          user_item_strengths), axis=0) / np.sum(
-        user_item_strengths)
-    user_profile_norm = normalize(user_item_strengths_weighted_avg)
+    user_item_strengths = np.array(interactions_person_df['session_size'])  # Improve
+    user_item_strengths_weighted_avg = np.dot(user_item_profiles.T[:, 0, :],
+                                              user_item_strengths) / max(user_item_strengths)
+    user_profile_norm = normalize(user_item_strengths_weighted_avg.reshape(1, -1))
     user_profiles[person_id] = user_profile_norm
     return user_profiles
 
@@ -88,8 +88,9 @@ def similar_items_to_user_profile(person_id, topn=1000):
     # Gets the top similar items
     similar_indices = cosine_similarities.argsort().flatten()[-topn:]
     # Sort the similar items by similarity
-    similar_items = sorted([(ds.loc[ds['article_id'] == i]['article_id'].values[0], cosine_similarities[0, i]) for i in similar_indices],
-                           key=lambda x: -x[1])
+    similar_items = sorted(
+        [(ds.loc[ds['article_id'] == i]['article_id'].values[0], cosine_similarities[0, i]) for i in similar_indices],
+        key=lambda x: -x[1])
     return similar_items
 
 
