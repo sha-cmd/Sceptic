@@ -1,4 +1,6 @@
-
+"""
+Travaux sur la bibliothèque Surprise. Fichier de sortie non produisible dans des délais raisonnable.
+"""
 import pandas as pd
 import yaml
 from joblib import Parallel, delayed
