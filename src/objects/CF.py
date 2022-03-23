@@ -209,7 +209,7 @@ class CF:
             ([[user_encoder]] * len(books_not_watched), books_not_watched)
         )
         ratings = model.predict(user_book_array).flatten()
-        top_ratings_indices = ratings.argsort()[-10:][::-1]
+        top_ratings_indices = ratings.argsort()[-10:][::-1]  # Retour du topn des meilleures recommandations
         recommended_book_ids = [
             self.book_encoded2book.get(books_not_watched[x][0]) for x in top_ratings_indices
         ]

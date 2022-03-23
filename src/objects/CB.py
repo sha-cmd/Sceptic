@@ -114,11 +114,8 @@ def lambda_fct(user=55):
     global clicks_list
     embeddings_path, metadata_path, matrix_size, clicks, clicks_list, clicks_agg, book_db = load_params()
     try:
-        recomm = similar_items_to_user_profile(user, topn=10)  # Retour des 5 meilleures recommandations
+        recomm = similar_items_to_user_profile(user, topn=10)  # Retour des topn meilleures recommandations
         myJSON = [str(x[0]) for x in recomm]
-        # with open('src/inference_content_based_filter.txt', 'w') as f:
-        #     f.write('user : ' + str(user) + '\n' + 'recommendation : ' + str([str(x[0]) for x in recomm])
-        #             + '\nscore           : ' + str([str(round(x[1], 2)) for x in recomm]))
         myArray = StringIO()
         json.dump(myJSON, myArray)
         print(myJSON)
