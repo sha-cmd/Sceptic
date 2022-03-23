@@ -138,3 +138,5 @@ stages:
     - path: metrics/synthese.csv
       md5: 37db6eead228eb3f919f14be82776ff1
       size: 1071
+  deep_learning:
+    cmd: python src/objects/ALS.py --recommend --model als
