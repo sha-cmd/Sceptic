@@ -1,23 +1,23 @@
 data:
-  embeddings: /home/romain/Documents/BackUp/Special/Projets/Code_IIA/Projet_9/Azure/functionOC/HttpTrigger/data/articles_embeddings.pickle
+  embeddings: /home/romain/Documents/BackUp/Special/Projets/Code_IIA/Projet_9/HttpTrigger_dev/data/articles_embeddings.pickle
   embeddings_jovien: ../data/articles_embeddings.pickle
-  metadata: /home/romain/Documents/BackUp/Special/Projets/Code_IIA/Projet_9/Azure/functionOC/HttpTrigger/data/articles_metadata.csv
+  metadata: /home/romain/Documents/BackUp/Special/Projets/Code_IIA/Projet_9/HttpTrigger_dev/data/articles_metadata.csv
   metadata_jovien: ../data/articles_metadata.csv
-  clicks: /home/romain/Documents/BackUp/Special/Projets/Code_IIA/Projet_9/Azure/functionOC/HttpTrigger/data/clicks
+  clicks: /home/romain/Documents/BackUp/Special/Projets/Code_IIA/Projet_9/HttpTrigger_dev/data/clicks
   clicks_jovien: ../data/clicks
-  clicks_agg: /home/romain/Documents/BackUp/Special/Projets/Code_IIA/Projet_9/Azure/functionOC/HttpTrigger/data/clicks_agg.csv
-  ranking: /home/romain/Documents/BackUp/Special/Projets/Code_IIA/Projet_9/Azure/functionOC/HttpTrigger/data/database.csv
-  ratings: /home/romain/Documents/BackUp/Special/Projets/Code_IIA/Projet_9/Azure/functionOC/HttpTrigger/data/books_ratings.csv
+  clicks_agg: /home/romain/Documents/BackUp/Special/Projets/Code_IIA/Projet_9/HttpTrigger_dev/data/clicks_agg.csv
+  ranking: /home/romain/Documents/BackUp/Special/Projets/Code_IIA/Projet_9/HttpTrigger_dev/data/database.csv
+  ratings: /home/romain/Documents/BackUp/Special/Projets/Code_IIA/Projet_9/HttpTrigger_dev/data/books_ratings.csv
 
 machine_learning:
   matrix_size: 100000
-  sample: 10000
-  epochs: 10
+  sample: 100000
+  epochs: 1
   ratio_val_test: 0.1
   learning_rate: 0.001
   rand_seed: 42
-  client_by_book: 20
-  book_by_client: 50
-  embedding_size: 1000000
+  client_by_book: 4 # 20
+  book_by_client: 2 # 50
+  embedding_size: 10000
 
 
