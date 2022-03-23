@@ -1,5 +1,5 @@
 from src.objects.CF import CF
-
+from src.objects.CB import lambda_fct
 import json
 import pandas as pd
 
@@ -30,3 +30,9 @@ def inference_implicit(req: functions.HttpRequest) -> str:
         json.dump(myJSON, myArray)
 
     return myArray.getvalue()
+
+
+def inference_content_based(req: functions.HttpRequest) -> str:
+    parameters = req.get_json()
+    user = parameters['userId']
+    return lambda_fct(user)
