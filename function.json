@@ -1,6 +1,6 @@
 {
   "scriptFile": "main.py",
-  "entryPoint": "inference",
+  "entryPoint": "inference_keras",
   "bindings": [
     {
       "authLevel": "function",

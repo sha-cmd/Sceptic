@@ -10,7 +10,7 @@ import yaml
 from pandas.core.frame import DataFrame
 from io import StringIO
 from sklearn.model_selection import train_test_split
-from RecommenderNet import RecommenderNet  # add . for AzFunc
+from .RecommenderNet import RecommenderNet  # add . for AzFunc
 from sklearn.model_selection import LeaveOneOut
 from tensorflow import keras
 
