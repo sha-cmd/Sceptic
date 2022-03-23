@@ -56,8 +56,8 @@ class CF:
     def load_db(self):
         
         self.dataframe = pd.read_csv(self.book_db, index_col='index', sep=';')
-        if not self.sample == 0:
-            self.dataframe = self.dataframe.sample(n=self.sample, random_state=self.rand_seed)
+        #if not self.sample == 0:
+        #self.dataframe = self.dataframe.sample(n=self.sample, random_state=self.rand_seed)
         print('db -> ' + str(self.dataframe.shape[0]))
         self.user_ids = self.dataframe["userID"].unique().tolist()
         self.user2user_encoded = {x: i for i, x in enumerate(self.user_ids)}
@@ -68,13 +68,13 @@ class CF:
         self.dataframe["user"] = self.dataframe["userID"].map(self.user2user_encoded)
         self.dataframe["book"] = self.dataframe["itemID"].map(self.book2book_encoded)
 
-        num_users = len(self.user2user_encoded)
-        num_books = len(self.book_encoded2book)
+        self.num_users = len(self.user2user_encoded)
+        self.num_books = len(self.book_encoded2book)
         self.dataframe["rating"] = self.dataframe["rating"].values.astype(np.float32)
-        min_rating = min(self.dataframe["rating"])
-        max_rating = max(self.dataframe["rating"])
+        self.min_rating = min(self.dataframe["rating"])
+        self.max_rating = max(self.dataframe["rating"])
 
-        description = pd.DataFrame([[num_users, num_books, min_rating, max_rating, self.sample]],
+        description = pd.DataFrame([[self.num_users, self.num_books, self.min_rating, self.max_rating, self.sample]],
                                    columns=["users", "books", "Min_rating", "max_rating", "lines"])
         print(description)
         #dataframe.sort_values(by=['user_id', 'click_timestamp', 'rating'])
