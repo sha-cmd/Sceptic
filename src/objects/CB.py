@@ -64,15 +64,13 @@ def build_user_profile(person_id):
     # Le profil contiendra les vecteurs de poids de la matrice TF-IDF
     user_profiles = {}
     # Nous listons les articles déjà consultés
-    ids = interactions_person_df['click_article_id'].values[0]
-    # Nous nous assurons que le résultat est sous forme de liste
-    ids = ids if (type(ids) == list) else [ids]
+    ids = interactions_person_df['click_article_id'].unique()
     # Nous attrapons les poids relatifs à nos items dans la matrice TF-IDF
     item_profiles_list = [tfidf_matrix[x:x + 1] for x in ids]
     # Nous les disposons en colonnes
     item_profiles = np.stack(item_profiles_list)
     user_item_profiles = item_profiles
-    user_item_strengths = [max(np.array(interactions_person_df['session_size']))]
+    user_item_strengths = [max(np.array(interactions_person_df['session_size']))]  # Improve
     user_item_strengths_weighted_avg = np.sum(np.multiply(user_item_profiles,
                                                           user_item_strengths), axis=0) / np.sum(
         user_item_strengths)
