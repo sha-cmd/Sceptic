@@ -74,7 +74,7 @@ def build_user_profile(person_id):
     user_item_strengths = np.array(interactions_person_df['session_size'])  # Improve
     user_item_strengths_weighted_avg = np.dot(user_item_profiles.T[:, 0, :],
                                               user_item_strengths) / max(user_item_strengths)
-    user_profile_norm = normalize(user_item_strengths_weighted_avg.reshape(1, -1))
+    user_profile_norm = normalize(user_item_strengths_weighted_avg.reshape(1, -1))  # Calibré pour un échantillon
     user_profiles[person_id] = user_profile_norm
     return user_profiles
 
