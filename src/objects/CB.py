@@ -65,7 +65,7 @@ def build_user_profile(person_id):
     # Le profil contiendra les vecteurs de poids de la matrice TF-IDF
     user_profiles = {}
     # Nous listons les articles déjà consultés
-    ids = interactions_person_df['click_article_id'].unique()
+    ids = interactions_person_df['click_article_id'].values.tolist()
     # Nous attrapons les poids relatifs à nos items dans la matrice TF-IDF
     item_profiles_list = [tfidf_matrix[x:x + 1] for x in ids]
     # Nous les disposons en colonnes
@@ -103,7 +103,7 @@ def similar_items_to_user_profile(person_id, topn=1000):
 #     }
 
 
-def lambda_fct(user=16545):
+def lambda_fct(user=55):
     global ds  # Valeur Initialisée dans cos_sim
     global tfidf_matrix
     global usr_ds  # DataFrame de nos clicks
