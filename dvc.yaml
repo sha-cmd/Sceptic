@@ -6,11 +6,15 @@ stages:
           cache: false
           persist: true
 
-  deep_learning_keras:  # Entraînement du collaborative filter
+  deep_learning_keras:  # Entraînement du collaborative filter par réseau de neurones
     cmd: python src/objects/CF.py train 1
 
   deep_learning:  # Travaux avec la bibliothèque Implicite 9 modèles possibles als, tfidf, cosine...
     cmd: python src/objects/ALS.py --recommend --model als
+    outs:
+      - data/similar-books.tsv:  # Base de recommendation
+          cache: false
+          persist: true
 
   machine_learning:  # ML sur la bibliothèque Surprise
     cmd: python src/machine_learning.py

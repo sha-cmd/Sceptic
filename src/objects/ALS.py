@@ -1,4 +1,4 @@
-""" An example of using this library to calculate related artists
+""" An example of using this library to calculate related books
 from the last.fm dataset. More details can be found
 at http://www.benfrederickson.com/matrix-factorization/
 This code will automically download a HDF5 version of the dataset from
@@ -66,11 +66,11 @@ def get_model(model_name):
     return model_class(**params)
 
 
-def calculate_similar_artists(output_filename, model_name="als"):
-    """generates a list of similar artists in lastfm by utilizing the 'similar_items'
+def calculate_similar_books(output_filename, model_name="als"):
+    """generates a list of similar books in lastfm by utilizing the 'similar_items'
     api of the models"""
     df = pd.read_csv('data/database.csv', sep=';', index_col='index')[['itemID', 'userID', 'rating']]
-    artists = {i: x for i, x in enumerate(df['itemID'].unique())}
+    books = {i: x for i, x in enumerate(df['itemID'].unique())}
     plays = df[['userID', 'itemID', 'rating']]
     # create a model from the input data
     model = get_model(model_name)
@@ -99,14 +99,14 @@ def calculate_similar_artists(output_filename, model_name="als"):
     model.fit(user_plays)
     logging.debug("trained model '%s' in %0.2fs", model_name, time.time() - start)
 
-    # write out similar artists by popularity
+    # write out similar books by popularity
     start = time.time()
-    logging.debug("calculating top artists")
+    logging.debug("calculating top books")
 
     user_count = df['itemID'].value_counts().index.tolist()
-    to_generate = sorted(np.arange(len(artists)), key=lambda x: -user_count[x])
+    to_generate = sorted(np.arange(len(books)), key=lambda x: -user_count[x])
 
-    # write out as a TSV of artistid, otherartistid, score
+    # write out as a TSV of bookid, otherbookid, score
     logging.debug("writing similar items")
     with tqdm.tqdm(total=len(to_generate)) as progress:
         with codecs.open(output_filename, "w", "utf8") as o:
@@ -114,22 +114,22 @@ def calculate_similar_artists(output_filename, model_name="als"):
             for startidx in range(0, len(to_generate), batch_size):
                 batch = to_generate[startidx: startidx + batch_size]
                 ids, scores = model.similar_items(batch, 11)
-                for i, artistid in enumerate(batch):
-                    artist = artists[artistid]
+                for i, bookid in enumerate(batch):
+                    book = books[bookid]
                     if i < 10:
                         for other, score in zip(ids[i], scores[i]):
-                            o.write(f"{artist}\t{artists[other]}\t{score}\n")
+                            o.write(f"{book}\t{books[other]}\t{score}\n")
                 progress.update(batch_size)
 
-    logging.debug("generated similar artists in %0.2fs", time.time() - start)
+    logging.debug("generated similar books in %0.2fs", time.time() - start)
 
 
 def calculate_recommendations(output_filename, model_name="als"):
-    """Generates artist recommendations for each user in the dataset"""
+    """Generates book recommendations for each user in the dataset"""
     # train the model based off input params
     df = pd.read_csv('data/database.csv', sep=';', index_col='index')[['itemID', 'userID', 'rating']]
     users = {i: x for i, x in enumerate(df['userID'].unique())}
-    artists = {i: x for i, x in enumerate(df['itemID'].unique())}
+    books = {i: x for i, x in enumerate(df['itemID'].unique())}
     plays = df[['userID', 'itemID', 'rating']]
     # create a model from the input data
     model = get_model(model_name)
@@ -174,21 +174,21 @@ def calculate_recommendations(output_filename, model_name="als"):
                     username = users[userid]
                     for other, score in zip(ids[i], scores[i]):
                         if not other == -1:
-                            o.write(f"{username}\t{artists[other]}\t{score}\n")
+                            o.write(f"{username}\t{books[other]}\t{score}\n")
                 progress.update(batch_size)
     logging.debug("generated recommendations in %0.2fs", time.time() - start)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Generates similar artists on the last.fm dataset"
+        description="Generates similar books on the last.fm dataset"
         " or generates personalized recommendations for each user",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument(
         "--output",
         type=str,
-        default="similar-artists.tsv",
+        default="data/similar-books.tsv",
         dest="outputfile",
         help="output file name",
     )
@@ -215,4 +215,4 @@ if __name__ == "__main__":
     if args.recommend:
         calculate_recommendations(args.outputfile, model_name=args.model)
     else:
-        calculate_similar_artists(args.outputfile, model_name=args.model)
+        calculate_similar_books(args.outputfile, model_name=args.model)
