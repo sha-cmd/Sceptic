@@ -130,7 +130,7 @@ def build_db():
         dataframe = dataframe.loc[~dataframe['userID'].isin(files.where(files['sum'] == files['size']).dropna().index.tolist())]
         files = dataframe.groupby('itemID')['rating'].agg(['sum', 'size'])
         dataframe = dataframe.loc[~dataframe['itemID'].isin(files.where(files['sum'] == files['size']).dropna().index.tolist())]
-        # Mesure prophylactique pour équilibré les classes de notes en réduisant la classe 1 à
+        # Mesure prophylactique pour équilibrer les classes de notes en réduisant la classe 1 à
 #        nb = (dataframe['rating'].value_counts().iloc[0] - dataframe['rating'].value_counts().iloc[1:].max()/2)
 #        black_list = (dataframe.loc[dataframe['rating'] == 1].sample(int(nb)).index.to_list())
 #        dataframe = dataframe.drop(index=black_list, axis=0)
