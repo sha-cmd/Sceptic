@@ -1,0 +1,33 @@
+@startuml
+'https://plantuml.com/state-diagram
+
+scale 350 width
+[*] --> Preprocessing
+
+state Preprocessing {
+[*] --> cst: Agg
+    state "Metadata" as meta
+    meta: implicit informations\non items
+    state "Constraints" as cst
+    cst: Concatenation\nLimits : >4 usrs/itm\n>2 itms/usr
+    state "GroupBy" as grp: Compute\nTimestamps\nand ratings
+  cst <-- meta: Check if\nitems\nare\nregistered
+  cst --> grp: Per user\nthen per\nitem
+    Preprocessing --> RecommenderSystems
+}
+
+state RecommenderSystems {
+    state "Content-Based" as cb
+    cb: Users Profiles
+    state "Embedding" as tfidf
+    tfidf: informations\non items
+    tfidf --> cb: Tfidf\nprojection
+    [*] --> cb
+    }
+
+
+RecommenderSystems --> AzFunction
+MobileApp --> AzFunction
+AzFunction --> [*]
+
+@enduml

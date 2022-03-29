@@ -1,0 +1,31 @@
+@startmindmap
+'https://plantuml.com/mindmap-diagram
+
+caption Recommender System
+title A short list of Recommender\nSystem Algorithms
+
+* <&flag>Recommender System
+** <&globe>Collaborative Filter
+*** als
+*** baselin
+*** cornac bivae
+*** cornac bpr
+*** lightgcn
+*** multi vae
+*** rbm
+*** sar
+*** standard vae
+*** surprise svd
+** Content-Based
+*** dkn
+*** mmlspark lightgbm criteo
+*** vowpal wabbit
+
+header
+Lot Of Different Results
+endheader
+
+center footer List of algorithms
+
+
+@endmindmap
