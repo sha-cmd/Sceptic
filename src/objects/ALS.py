@@ -1,10 +1,3 @@
-""" An example of using this library to calculate related books
-from the last.fm dataset. More details can be found
-at http://www.benfrederickson.com/matrix-factorization/
-This code will automically download a HDF5 version of the dataset from
-GitHub when it is first run. The original dataset can also be found at
-http://www.dtic.upf.edu/~ocelma/MusicRecommendationDataset/lastfm-360K.html.
-"""
 import argparse
 import codecs
 import logging
@@ -31,7 +24,6 @@ from implicit.nearest_neighbours import (
     bm25_weight,
 )
 
-# maps command line model argument to class name
 MODELS = {
     "als": AlternatingLeastSquares,
     "nmslib_als": NMSLibAlternatingLeastSquares,
@@ -72,17 +64,12 @@ def calculate_similar_books(output_filename, model_name="als"):
     df = pd.read_csv('data/database.csv', sep=';', index_col='index')[['itemID', 'userID', 'rating']]
     books = {i: x for i, x in enumerate(df['itemID'].unique())}
     plays = df[['userID', 'itemID', 'rating']]
-    # create a model from the input data
     model = get_model(model_name)
 
-    # if we're training an ALS based model, weight input for last.fm
-    # by bm25
     if model_name.endswith("als"):
-        # lets weight these models by bm25weight.
         logging.debug("weighting matrix by bm25_weight")
         plays = bm25_weight(plays, K1=100, B=0.8)
 
-        # also disable building approximate recommend index
         model.approximate_recommend = False
 
     # this is actually disturbingly expensive:
@@ -99,14 +86,12 @@ def calculate_similar_books(output_filename, model_name="als"):
     model.fit(user_plays)
     logging.debug("trained model '%s' in %0.2fs", model_name, time.time() - start)
 
-    # write out similar books by popularity
     start = time.time()
     logging.debug("calculating top books")
 
     user_count = df['itemID'].value_counts().index.tolist()
     to_generate = sorted(np.arange(len(books)), key=lambda x: -user_count[x])
 
-    # write out as a TSV of bookid, otherbookid, score
     logging.debug("writing similar items")
     with tqdm.tqdm(total=len(to_generate)) as progress:
         with codecs.open(output_filename, "w", "utf8") as o:
@@ -126,25 +111,18 @@ def calculate_similar_books(output_filename, model_name="als"):
 
 def calculate_recommendations(output_filename, model_name="als"):
     """Generates book recommendations for each user in the dataset"""
-    # train the model based off input params
     df = pd.read_csv('data/database.csv', sep=';', index_col='index')[['itemID', 'userID', 'rating']]
     users = {i: x for i, x in enumerate(df['userID'].unique())}
     books = {i: x for i, x in enumerate(df['itemID'].unique())}
     plays = df[['userID', 'itemID', 'rating']]
-    # create a model from the input data
     model = get_model(model_name)
 
-    # if we're training an ALS based model, weight input for last.fm
-    # by bm25
     if model_name.endswith("als"):
-        # lets weight these models by bm25weight.
         logging.debug("weighting matrix by bm25_weight")
         plays = bm25_weight(plays, K1=100, B=0.8)
 
-        # also disable building approximate recommend index
         model.approximate_similar_items = False
 
-    # this is actually disturbingly expensive:
 
     item = {x: 0 for x in df['itemID'].unique()}
     user = {x: {} for x in df['userID'].unique()}
@@ -159,7 +137,6 @@ def calculate_recommendations(output_filename, model_name="als"):
     model.fit(user_plays)
     logging.debug("trained model '%s' in %0.2fs", model_name, time.time() - start)
 
-    # generate recommendations for each user and write out to a file
     start = time.time()
     with tqdm.tqdm(total=len(users)) as progress:
         with codecs.open(output_filename, "w", "utf8") as o:
