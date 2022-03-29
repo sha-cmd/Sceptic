@@ -1,3 +1,5 @@
+"""Ce fichier crée une base de données de recommendation pour nos clients selon nos articles"""
+
 import argparse
 import codecs
 import logging
