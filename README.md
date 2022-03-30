@@ -20,4 +20,6 @@ Nous avons aussi testé l’algorithme par [content based](https://github.com/sh
 
 Pour finir nous avons testé l’algorithme par [collab filter](https://github.com/sha-cmd/Sceptic/blob/master/src/objects/CF.py), dont le réseau neuronal est écrit dans [ce fichier](https://github.com/sha-cmd/Sceptic/blob/master/src/objects/RecommenderNet.py).
 
+Il reste possible, au demeurant, de déployer le système de recommendation avec l’usage de stockage de blob dans Azure et de la fonction Azure tels que le présentent les fichiers du répertoire [HttpTrigger](https://github.com/sha-cmd/Sceptic/tree/master/HttpTrigger).
+
 
