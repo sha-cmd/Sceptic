@@ -1,3 +1,4 @@
+"""Prototypage de fichier de fonction pour le déploiement"""
 from src.objects.CF import CF
 from src.objects.CB import lambda_fct
 import json
