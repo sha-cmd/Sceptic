@@ -1,3 +1,6 @@
+"""Travaux d’exploration de nos algorithmes via la bibliothèque Surprise, avec l’ajout de métrique dédié à la
+recherche de performance. L’utilisation de LeaveOneOut est optimisé par la bibliothèque précédente."""
+
 import os
 import os.path as path
 import pandas as pd
@@ -50,7 +53,7 @@ pred = {'NormalPred': ['metrics/normalPred', prediction_algorithms.random_pred.N
         'NMF': ['metrics/NMF', prediction_algorithms.matrix_factorization.NMF]
         }
 
-
+# Utilisation de DVC requise pour un usage de ces données en format tableau. Affichage des performances en graphiques.
 data = {'name': [], 'rmse': [], 'mae': [], 'mse': [], 'fcp': [], 'HR': [], 'cHR': [],
         'ARHR': [], 'Coverage': [], 'Diversity': [], 'Novelty': []}
 
@@ -135,5 +138,5 @@ for algo_name in pred.keys():
         data[met_name].append(score)
     data['name'].append(algo_name)
 
-
+# Maîtrise des résultats avec projection en numéraire dans un fichier à partir d’un dictionnaire
 pd.DataFrame.from_dict(data).to_csv('metrics/synthese.csv', index_label='index', sep=';')
