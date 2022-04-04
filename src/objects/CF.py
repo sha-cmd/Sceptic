@@ -1,3 +1,5 @@
+"""Script d’une classe d’objet pour le collaborative filtering. L’utilisation de ce fichier requiert des paramètres
+utilisant un fichier param.yaml typique de DVC, pouvant être uploader dans IterativeStudio"""
 import argparse
 import json
 import sys
@@ -9,9 +11,7 @@ import yaml
 
 from pandas.core.frame import DataFrame
 from io import StringIO
-from sklearn.model_selection import train_test_split
 from .RecommenderNet import RecommenderNet  # add . for AzFunc
-from sklearn.model_selection import LeaveOneOut
 from tensorflow import keras
 
 class CF:
