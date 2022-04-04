@@ -4,6 +4,7 @@ from tensorflow.keras import layers
 
 
 class RecommenderNet(keras.Model):
+    """Objet de type réseau-neuronal, utilisé en class de type « Model »."""
     def __init__(self, num_users, num_books, embedding_size, **kwargs):
         super(RecommenderNet, self).__init__(**kwargs)
         self.num_users = num_users
