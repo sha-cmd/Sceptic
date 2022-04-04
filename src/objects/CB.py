@@ -94,15 +94,6 @@ def similar_items_to_user_profile(person_id, topn=1000):
     return similar_items
 
 
-# def lambda_handler(event, context):
-#     name = event['queryStringParameters']['name']
-#     return {
-#         "statusCode": 200,
-#         "headers": {"Content-Type": "application/json"},
-#         "body": json.dumps({"Hello": name})
-#     }
-
-
 def lambda_fct(user=55):
     global ds  # Valeur Initialisée dans cos_sim
     global tfidf_matrix
