@@ -14,6 +14,7 @@ from io import StringIO
 from .RecommenderNet import RecommenderNet  # add . for AzFunc
 from tensorflow import keras
 
+
 class CF:
     def __init__(self):    
         self.metadata_path = None
