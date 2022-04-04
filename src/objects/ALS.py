@@ -26,6 +26,8 @@ from implicit.nearest_neighbours import (
     bm25_weight,
 )
 
+# Tous ces modèles sont des systèmes de recommandation de collaboration filtering, mais avec des modalités
+# différentes, nuançant nos résultats selon le taux d’engagement par nos clients pour le profit.
 MODELS = {
     "als": AlternatingLeastSquares,
     "nmslib_als": NMSLibAlternatingLeastSquares,
@@ -40,12 +42,12 @@ MODELS = {
 
 
 def get_model(model_name):
+    """Accesseur du modèle, dans un mode fonctionnel, adaptable à un objet"""
     print(f"getting model {model_name}")
     model_class = MODELS.get(model_name)
     if not model_class:
         raise ValueError(f"Unknown Model '{model_name}'")
 
-    # some default params
     if model_name.endswith("als"):
         params = {"factors": 128, "dtype": np.float32}
     elif model_name == "bm25":
@@ -61,8 +63,7 @@ def get_model(model_name):
 
 
 def calculate_similar_books(output_filename, model_name="als"):
-    """generates a list of similar books in lastfm by utilizing the 'similar_items'
-    api of the models"""
+    """Computation des livres similaires dans notre base de données"""
     df = pd.read_csv('data/database.csv', sep=';', index_col='index')[['itemID', 'userID', 'rating']]
     books = {i: x for i, x in enumerate(df['itemID'].unique())}
     plays = df[['userID', 'itemID', 'rating']]
@@ -74,13 +75,13 @@ def calculate_similar_books(output_filename, model_name="als"):
 
         model.approximate_recommend = False
 
-    # this is actually disturbingly expensive:
-   # plays = plays.tocsr()
+    # Création d’un index de récupération de nos sujets d’observation
     item = {x: 0 for x in df['itemID'].unique()}
     user = {x: {} for x in df['userID'].unique()}
     for i in range(len(df)):
         item[df.iloc[i, 0]] = df.iloc[i, 2]
         user[df.iloc[i, 1]][df.iloc[i, 0]] = df.iloc[i, 2]
+    # Utilisation de la mémoire en mode matricielle et clairsemé, optimisation computationnel, ne pas toucher
     user_plays = scipy.sparse.csr_matrix(pd.DataFrame.from_dict(user).fillna(0).T.values)
 
     logging.debug("training model %s", model_name)
@@ -95,6 +96,7 @@ def calculate_similar_books(output_filename, model_name="als"):
     to_generate = sorted(np.arange(len(books)), key=lambda x: -user_count[x])
 
     logging.debug("writing similar items")
+    # Production du calcul de sortie, inscription dans un fichier de type tableur
     with tqdm.tqdm(total=len(to_generate)) as progress:
         with codecs.open(output_filename, "w", "utf8") as o:
             batch_size = 1000
@@ -112,7 +114,7 @@ def calculate_similar_books(output_filename, model_name="als"):
 
 
 def calculate_recommendations(output_filename, model_name="als"):
-    """Generates book recommendations for each user in the dataset"""
+    """Calcul des recommandations pour l’ensemble de la base des utilisateurs"""
     df = pd.read_csv('data/database.csv', sep=';', index_col='index')[['itemID', 'userID', 'rating']]
     users = {i: x for i, x in enumerate(df['userID'].unique())}
     books = {i: x for i, x in enumerate(df['itemID'].unique())}
@@ -131,6 +133,7 @@ def calculate_recommendations(output_filename, model_name="als"):
     for i in range(len(df)):
         item[df.iloc[i, 0]] = df.iloc[i, 2]
         user[df.iloc[i, 1]][df.iloc[i, 0]] = df.iloc[i, 2]
+    # Optimisation
     user_plays = scipy.sparse.csr_matrix(pd.DataFrame.from_dict(user).fillna(0).T.values)
 
 
@@ -140,6 +143,7 @@ def calculate_recommendations(output_filename, model_name="als"):
     logging.debug("trained model '%s' in %0.2fs", model_name, time.time() - start)
 
     start = time.time()
+    # Coeur de la computation
     with tqdm.tqdm(total=len(users)) as progress:
         with codecs.open(output_filename, "w", "utf8") as o:
             batch_size = 1000
@@ -159,6 +163,7 @@ def calculate_recommendations(output_filename, model_name="als"):
 
 
 if __name__ == "__main__":
+    # Production d’un appel avec passage d’argument comprenant une valeur par défaut.
     parser = argparse.ArgumentParser(
         description="Generates similar books on the last.fm dataset"
         " or generates personalized recommendations for each user",
