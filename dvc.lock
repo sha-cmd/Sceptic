@@ -13,8 +13,4 @@ stages:
       md5: 1d8a5cd158ebe834061e6fc78e693597
       size: 726
   dirosa:
-    cmd: python src/inference_content_based_filter.py
-    outs:
-    - path: src/inference_content_based_filter.txt
-      md5: 1d8a5cd158ebe834061e6fc78e693597
-      size: 726
+    cmd: python src/collaborative_filter.py train 0

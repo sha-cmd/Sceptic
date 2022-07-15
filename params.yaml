@@ -13,9 +13,11 @@ content_filter:
 
 collab:
   sample: 0
-  epochs: 10
+  epochs: 25
   ratio_val_test: 0.1
-  learning_rate: 0.001
+  learning_rate: 0.0001
   rand_seed: 42
   embedding_size: 50
+  client_by_book: 9
+  book_by_client: 9
 
