@@ -1,3 +1,7 @@
+# DO NOT include azure-functions-worker in this file
+# The Python Worker is managed by Azure Functions platform
+# Manually managing azure-functions-worker may cause unexpected issues
+
 absl-py==1.0.0
 aiohttp==3.8.1
 aiohttp-retry==2.4.6
@@ -8,6 +12,7 @@ async-timeout==4.0.2
 asyncssh==2.8.1
 atpublic==3.0.1
 attrs==21.4.0
+azure-functions
 cachetools==5.0.0
 certifi==2021.10.8
 cffi==1.15.0
