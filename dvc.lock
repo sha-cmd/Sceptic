@@ -1,0 +1,146 @@
+schema: '2.0'
+stages:
+  combas:
+    cmd: python src/content_filter.py
+    outs:
+    - path: src/model.joblib
+      md5: a2815bc9323be9b6290b85b5562ed3dc
+      size: 35515022
+  miro:
+    cmd: python src/inference_content_based_filter.py
+    outs:
+    - path: src/inference_content_based_filter.txt
+      md5: 1d8a5cd158ebe834061e6fc78e693597
+      size: 726
+  dirosa:
+    cmd: python src/inference_content_based_filter.py
+    outs:
+    - path: src/inference_content_based_filter.txt
+      md5: 1d8a5cd158ebe834061e6fc78e693597
+      size: 726
+  preprocessing:
+    cmd: python src/preprocessing.py
+    outs:
+    - path: data/database.csv
+      md5: 8c1ccdc584db5132d36afc4907989a20
+      size: 9885297
+  machine_learning:
+    cmd: python src/machine_learning.py
+    outs:
+    - path: metrics/NMF/fcp.tsv
+      md5: 91d9ce87d0d73725d765428f52990067
+      size: 30
+    - path: metrics/NMF/mae.tsv
+      md5: 1e2ffe5c9f1c751494d16f274f7edeec
+      size: 30
+    - path: metrics/NMF/mse.tsv
+      md5: 1242a0cfdcdc7514d8adb5b22ff115b0
+      size: 32
+    - path: metrics/NMF/rmse.tsv
+      md5: 7a2cc434adfbfe8e341463947ea3f4af
+      size: 33
+    - path: metrics/SVD/fcp.tsv
+      md5: c9e947add4ed7426d1a878bb2919c68d
+      size: 31
+    - path: metrics/SVD/mae.tsv
+      md5: c260fa2eee659786735b85cc81a110f9
+      size: 32
+    - path: metrics/SVD/mse.tsv
+      md5: d16bec15c554a1dfc3de3badee27ebf0
+      size: 32
+    - path: metrics/SVD/rmse.tsv
+      md5: a813d0f6a117bb37d8e20ae3f3c903e2
+      size: 33
+    - path: metrics/SVDpp/fcp.tsv
+      md5: e1407a2ba10207be200b644bc4c5d749
+      size: 31
+    - path: metrics/SVDpp/mae.tsv
+      md5: a1ba6499046b2ff4892cca871f870d91
+      size: 32
+    - path: metrics/SVDpp/mse.tsv
+      md5: a6c7747a852519f94b24f65971502225
+      size: 32
+    - path: metrics/SVDpp/rmse.tsv
+      md5: 471bf90cf30f8b6fcb46923feefbc8e6
+      size: 33
+    - path: metrics/baseLineALS/fcp.tsv
+      md5: fa439f754b2c7d3ce3625f5fa254e8f5
+      size: 31
+    - path: metrics/baseLineALS/mae.tsv
+      md5: 6fcda7f943ab911576753aa8e3b959ed
+      size: 32
+    - path: metrics/baseLineALS/mse.tsv
+      md5: e7a981602b8b00eafe091818a42b4714
+      size: 33
+    - path: metrics/baseLineALS/rmse.tsv
+      md5: 3c6a0e7620a3d653329df1188c387858
+      size: 33
+    - path: metrics/baseLineSGD/fcp.tsv
+      md5: c1d941d29a2d90810bde5c0d3b99b4db
+      size: 31
+    - path: metrics/baseLineSGD/mae.tsv
+      md5: 022e994d73dd75fc76a13826d2fd7d74
+      size: 32
+    - path: metrics/baseLineSGD/mse.tsv
+      md5: 555ef27388cc31f7880bf0ce0e02b956
+      size: 32
+    - path: metrics/baseLineSGD/rmse.tsv
+      md5: d47b854c93a173d962afcc8679ea202a
+      size: 33
+    - path: metrics/knnBasicALS/fcp.tsv
+      md5: 6eefb86662c69e7fb2d9e2c38f80e65d
+      size: 31
+    - path: metrics/knnBasicALS/mae.tsv
+      md5: 26ce153d4a47ab7adf683c8f7a9cc45a
+      size: 32
+    - path: metrics/knnBasicALS/mse.tsv
+      md5: f87f0b76dafab00f859e9c0cca965d4c
+      size: 32
+    - path: metrics/knnBasicALS/rmse.tsv
+      md5: 48ebffbb18b21f826adf62427a1044aa
+      size: 33
+    - path: metrics/knnBasicNoShrink/fcp.tsv
+      md5: e35874bf47a0b36f0138a7786bce02f5
+      size: 30
+    - path: metrics/knnBasicNoShrink/mae.tsv
+      md5: 54b7a2a267d56d64828af650e466333f
+      size: 32
+    - path: metrics/knnBasicNoShrink/mse.tsv
+      md5: e31b846b9f4a9b49bca0b7f0b3c613a4
+      size: 32
+    - path: metrics/knnBasicNoShrink/rmse.tsv
+      md5: 54288aa0cd6fd144f2bab0e12048591b
+      size: 32
+    - path: metrics/knnBasicSims/fcp.tsv
+      md5: 9af794cdf5538ac6fd248f3485e0a263
+      size: 32
+    - path: metrics/knnBasicSims/mae.tsv
+      md5: 8b3cf2618ac90ee73a0fe2d23b7e5d12
+      size: 32
+    - path: metrics/knnBasicSims/mse.tsv
+      md5: d0d3640b85cac61e1f063afd25b10d6d
+      size: 32
+    - path: metrics/knnBasicSims/rmse.tsv
+      md5: 0102415231e4adbdcfe34d84235a6861
+      size: 33
+    - path: metrics/normalPred/fcp.tsv
+      md5: 844cd169cb6317ffee40cf433c81ff4e
+      size: 31
+    - path: metrics/normalPred/mae.tsv
+      md5: 4634214bb4f74a432d8ed7f0a5814776
+      size: 32
+    - path: metrics/normalPred/mse.tsv
+      md5: 5c3d911f37c0d7cb2e877b62fcd73890
+      size: 32
+    - path: metrics/normalPred/rmse.tsv
+      md5: a5820fa26e01918db2a719bd88a5b581
+      size: 33
+    - path: metrics/synthese.csv
+      md5: 37db6eead228eb3f919f14be82776ff1
+      size: 1071
+  deep_learning:
+    cmd: python src/objects/ALS.py --recommend --model als
+    outs:
+    - path: data/similar-books.tsv
+      md5: f1f1c1914da38838b50bea2581c73f77
+      size: 6260261

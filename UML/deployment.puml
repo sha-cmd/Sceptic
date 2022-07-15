@@ -1,0 +1,62 @@
+@startuml
+'https://plantuml.com/deployment-diagram
+
+cloud "Cloud Storage" #lightgray{
+database "behavorial\ndata" as data
+}
+
+node ":Android" as Android #lightblue{
+component ":ReactNative" as React #white{
+control sendId
+control receiveRecom.
+file AppJS as appjs
+artifact "Web Page" as wbp #orange{
+file recommendations
+}
+}
+}
+
+node ":Azure" as Azure #lightblue{
+component ":AzFunctions" as function #white{
+control sendRecom.
+control receiveId
+file predict as main
+folder ".tf Model" as fctdata #gray{
+database "recommendations" as recomm
+        }
+    }
+
+}
+
+node ":Laboratory" as Laboratory #lightblue{
+node ":VSCode" as IDE #white{
+component Python as Py #lightgreen{
+artifact Implicit
+artifact Keras
+}
+file preprocessing
+file "deep-learning" as DL
+folder "folder" #gray{
+database "cleaned data" as result
+}
+folder model as mdl #gray{
+database "Neural Network" as nn
+}
+}
+}
+Azure --||> Laboratory: TCP/IP
+result --> preprocessing
+nn --> DL
+DL --> result
+DL --> Py
+mdl == fctdata: Transfert
+Laboratory -0)- data: TCP/IP
+receiveId <-- main
+main --> recomm
+sendRecom. --> main
+data -(0- Android: TCP/IP
+Android 0)--(0 Azure #line.bold;: Http
+appjs --> sendId
+receiveRecom. <-- appjs
+wbp --> appjs
+@enduml

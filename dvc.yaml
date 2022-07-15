@@ -1,0 +1,133 @@
+stages:
+  preprocessing:
+    cmd: python src/preprocessing.py
+    outs:
+      - data/database.csv:
+          cache: false
+          persist: true
+
+  deep_learning_keras:  # Entraînement du collaborative filter par réseau de neurones
+    cmd: python src/objects/CF.py train 1
+
+  deep_learning:  # Travaux avec la bibliothèque Implicite 9 modèles possibles als, tfidf, cosine...
+    cmd: python src/objects/ALS.py --recommend --model als
+    outs:
+      - data/similar-books.tsv:  # Base de recommendation
+          cache: false
+          persist: true
+
+  machine_learning:  # ML sur la bibliothèque Surprise
+    cmd: python src/machine_learning.py
+    outs:
+      - metrics/synthese.csv:
+          cache: false
+          persist: true
+    metrics:
+    - metrics/baseLineALS/rmse.tsv:
+        cache: false
+        persist: true
+    - metrics/baseLineALS/mse.tsv:
+        cache: false
+        persist: true
+    - metrics/baseLineALS/mae.tsv:
+        cache: false
+        persist: true
+    - metrics/baseLineALS/fcp.tsv:
+        cache: false
+        persist: true
+    - metrics/NMF/rmse.tsv:
+        cache: false
+        persist: true
+    - metrics/NMF/mse.tsv:
+        cache: false
+        persist: true
+    - metrics/NMF/mae.tsv:
+        cache: false
+        persist: true
+    - metrics/NMF/fcp.tsv:
+        cache: false
+        persist: true
+    - metrics/knnBasicSims/rmse.tsv:
+        cache: false
+        persist: true
+    - metrics/knnBasicSims/mse.tsv:
+        cache: false
+        persist: true
+    - metrics/knnBasicSims/mae.tsv:
+        cache: false
+        persist: true
+    - metrics/knnBasicSims/fcp.tsv:
+        cache: false
+        persist: true
+    - metrics/SVDpp/rmse.tsv:
+        cache: false
+        persist: true
+    - metrics/SVDpp/mse.tsv:
+        cache: false
+        persist: true
+    - metrics/SVDpp/mae.tsv:
+        cache: false
+        persist: true
+    - metrics/SVDpp/fcp.tsv:
+        cache: false
+        persist: true
+    - metrics/normalPred/rmse.tsv:
+        cache: false
+        persist: true
+    - metrics/normalPred/mse.tsv:
+        cache: false
+        persist: true
+    - metrics/normalPred/mae.tsv:
+        cache: false
+        persist: true
+    - metrics/normalPred/fcp.tsv:
+        cache: false
+        persist: true
+    - metrics/knnBasicNoShrink/rmse.tsv:
+        cache: false
+        persist: true
+    - metrics/knnBasicNoShrink/mse.tsv:
+        cache: false
+        persist: true
+    - metrics/knnBasicNoShrink/mae.tsv:
+        cache: false
+        persist: true
+    - metrics/knnBasicNoShrink/fcp.tsv:
+        cache: false
+        persist: true
+    - metrics/SVD/rmse.tsv:
+        cache: false
+        persist: true
+    - metrics/SVD/mse.tsv:
+        cache: false
+        persist: true
+    - metrics/SVD/mae.tsv:
+        cache: false
+        persist: true
+    - metrics/SVD/fcp.tsv:
+        cache: false
+        persist: true
+    - metrics/knnBasicALS/rmse.tsv:
+        cache: false
+        persist: true
+    - metrics/knnBasicALS/mse.tsv:
+        cache: false
+        persist: true
+    - metrics/knnBasicALS/mae.tsv:
+        cache: false
+        persist: true
+    - metrics/knnBasicALS/fcp.tsv:
+        cache: false
+        persist: true
+    - metrics/baseLineSGD/rmse.tsv:
+        cache: false
+        persist: true
+    - metrics/baseLineSGD/mse.tsv:
+        cache: false
+        persist: true
+    - metrics/baseLineSGD/mae.tsv:
+        cache: false
+        persist: true
+    - metrics/baseLineSGD/fcp.tsv:
+        cache: false
+        persist: true

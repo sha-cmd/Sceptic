@@ -1,0 +1,34 @@
+@startuml
+'https://plantuml.com/component-diagram
+
+
+package "User Group" {
+  [Smartphone] - [UserID] 
+}
+
+node "Data Scientist" {
+  [Machine - Deep\nLearning] <-- [Behavioral\nData]
+  [Recommender\nSystems] <-- [Machine - Deep\nLearning]
+}
+
+cloud {
+  [Az Function]
+}
+
+
+database "Storage" {
+  folder "Folder" {
+    [AI Model]
+  }
+  frame "Database" {
+    [NoSQL]
+  }
+}
+
+[UserID] --> [Behavioral\nData]
+[Smartphone] <--> [Az Function]
+[Az Function] <|-- [AI Model]
+[Az Function] <|-- [NoSQL]
+[Recommender\nSystems] --> [AI Model]
+[Recommender\nSystems] --> [NoSQL]
+@enduml

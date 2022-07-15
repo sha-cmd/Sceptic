@@ -1,0 +1,38 @@
+@startuml
+'https://plantuml.com/use-case-diagram
+
+
+skinparam handwritten true
+
+skinparam usecase {
+BackgroundColor DarkSeaGreen
+BorderColor DarkSlateGray
+
+BackgroundColor<< Main >> YellowGreen
+BorderColor<< Main >> YellowGreen
+
+ArrowColor Olive
+ActorBorderColor black
+ActorFontName Courier
+
+ActorBackgroundColor<< Human >> Gold
+}
+
+User << Human >>
+:Main Database: as MySql << Application >>
+(Sign in or Create an account) <<1. Web Site >> as (SoC)
+(Check password or Give an Id) <<2. Unique Identification >> as (Uid)
+(Return recommendation) <<3.2 Recommendation >> as (Rec)
+(Use the application) as (Use) <<3.1 Click on items >>
+(Collect the clicks) as (Clicks) <<4. Behovioral data >>
+User -> (SoC)
+(SoC) --> (Uid)
+MySql -> (Uid)
+User --> (Use)
+(Uid) --> (Use): Not Enough Data
+(Uid) --> (Rec): Enough Data
+(Use) --> (Clicks)
+MySql --> (Clicks)
+MySql --> (Rec)
+@enduml
+
